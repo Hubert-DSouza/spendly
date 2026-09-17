@@ -1,0 +1,13 @@
+users/{uid}
+│
+├── settings
+│   ├── poolAmount
+│   ├── reserveAmount
+│   ├── currency
+│   └── quickExpenses[]
+│
+├── transactions/
+│   └── {transactionId}
+│
+└── scheduledTransactions/
+    └── {scheduledTransactionId}

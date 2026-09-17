@@ -1,39 +1,100 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:expense_tracker/theme/app_colors.dart';
-import 'package:expense_tracker/theme/app_radius.dart';
-import 'package:expense_tracker/theme/app_spacing.dart';
-
+import '../models/quick_expense.dart';
+import '../models/transaction.dart';
+import '../providers/dashboard_provider.dart';
+import '../providers/transaction_provider.dart';
+import '../providers/user_settings_provider.dart';
+import '../theme/app_theme.dart';
+import '../widgets/bottom_nav_bar.dart';
+import '../widgets/homepage_tile.dart';
+import '../widgets/quick_expense_button.dart';
+import 'expense_history.dart';
 import 'log_expense_page.dart';
+import 'user_settings_page.dart';
 
-class HomePage extends StatefulWidget {
+int quickExpensesCount = 6;
+const String quickExpensesKey = 'quick_expenses';
+
+const List<QuickExpense> defaultQuickExpenses = [
+  QuickExpense(name: 'Tea', amount: 20, emoji: '☕', categoryId: 'food'),
+  QuickExpense(name: 'Maggi', amount: 40, emoji: '🍜', categoryId: 'food'),
+  QuickExpense(name: 'Auto', amount: 50, emoji: '🚗', categoryId: 'transport'),
+  QuickExpense(name: 'Laundry', amount: 60, emoji: '🧺', categoryId: 'bills'),
+  QuickExpense(name: 'Canteen', amount: 80, emoji: '🍱', categoryId: 'food'),
+  QuickExpense(name: 'Coffee', amount: 30, emoji: '☕', categoryId: 'food'),
+];
+
+List<QuickExpense> getDefaultQuickExpenses() {
+  return List.generate(quickExpensesCount, (i) {
+    if (i < defaultQuickExpenses.length) {
+      return defaultQuickExpenses[i];
+    }
+    return QuickExpense(
+      name: 'Item ${i + 1}',
+      amount: 50,
+      emoji: '⚡',
+      categoryId: 'other',
+    );
+  });
+}
+
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  // --------------------------------------------------
-  // QUICK EXPENSES
-  // --------------------------------------------------
+class HomePageState extends ConsumerState<HomePage> {
+  List<QuickExpense> quickExpenses = getDefaultQuickExpenses();
 
-  final List<Map<String, dynamic>?> quickExpenses = [
-    {'name': 'Chai', 'amount': 20.0},
-    {'name': 'Canteen', 'amount': 80.0},
-    {'name': 'Laundry', 'amount': 50.0},
-    {'name': 'Auto', 'amount': 40.0},
-    null,
-  ];
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
 
-  bool _editingQuickExpenses = false;
+  Future<void> loadData() async {
+    await ref.read(userSettingsProvider.notifier).loadPoolAmount();
+    await ref.read(transactionProvider.notifier).loadTransactions();
+    await loadQuickExpenses();
+  }
 
-  // --------------------------------------------------
-  // OPEN LOG EXPENSE
-  // --------------------------------------------------
+  Future<void> loadQuickExpenses() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? jsonStr = prefs.getString(quickExpensesKey);
+    if (jsonStr != null && jsonStr.isNotEmpty) {
+      try {
+        final List<dynamic> list = jsonDecode(jsonStr) as List<dynamic>;
+        final loaded = list
+            .map((e) => QuickExpense.fromMap(Map<String, dynamic>.from(e)))
+            .toList();
+        if (loaded.length == quickExpensesCount && mounted) {
+          setState(() => quickExpenses = loaded);
+          return;
+        }
+      } catch (_) {}
+    }
+    await saveQuickExpenses(getDefaultQuickExpenses());
+  }
 
-  void _openLogExpense(BuildContext context) {
+  Future<void> saveQuickExpenses(List<QuickExpense> expenses) async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = expenses.map((e) => e.toMap()).toList();
+    await prefs.setString(quickExpensesKey, jsonEncode(data));
+    if (mounted) {
+      setState(() => quickExpenses = List.from(expenses));
+    }
+  }
+
+  void openLogExpense() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -41,294 +102,258 @@ class _HomePageState extends State<HomePage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
-      builder: (context) {
-        return const LogExpensePage();
-      },
+      builder: (context) => const LogExpensePage(),
     );
   }
 
-  // --------------------------------------------------
-  // QUICK EXPENSE TAP
-  // --------------------------------------------------
+  void openProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const UserSettingsPage()),
+    );
+  }
 
-  void _handleQuickExpenseTap(int index) {
-    if (_editingQuickExpenses) {
-      _editQuickExpense(index);
-      return;
-    }
-
+  Future<void> handleQuickExpenseTap(int index) async {
+    if (index >= quickExpenses.length) return;
     final expense = quickExpenses[index];
+    try {
+      await ref
+          .read(transactionProvider.notifier)
+          .logExpense(
+            amount: expense.amount,
+            categoryId: expense.categoryId,
+            note: expense.name,
+            source: TransactionSource.quick,
+          );
+      if (!mounted) return;
 
-    if (expense == null) {
-      _editQuickExpense(index);
-      return;
-    }
-
-    final String name = expense['name'];
-    final double amount = expense['amount'];
-
-    // Firebase will be connected later.
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '$name • ₹${amount.toStringAsFixed(0)} logged',
-          style: GoogleFonts.poppins(fontSize: 13),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${expense.name} • ₹${expense.amount.toStringAsFixed(0)} logged',
+            style: GoogleFonts.poppins(fontSize: 13),
+          ),
+          duration: const Duration(seconds: 1),
         ),
-        duration: const Duration(seconds: 1),
-      ),
-    );
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not save expense.')),
+        );
+      }
+    }
   }
 
-  // --------------------------------------------------
-  // EDIT QUICK EXPENSE
-  // --------------------------------------------------
-
-  void _editQuickExpense(int index) {
-    final expense = quickExpenses[index];
-
-    final nameController = TextEditingController(text: expense?['name'] ?? '');
-
-    final amountController = TextEditingController(
-      text: expense?['amount']?.toStringAsFixed(0) ?? '',
+  Future<void> openEditQuickExpensesDialog() async {
+    final nameControllers = List.generate(
+      quickExpensesCount,
+      (i) => TextEditingController(
+        text: i < quickExpenses.length ? quickExpenses[i].name : '',
+      ),
+    );
+    final emojiControllers = List.generate(
+      quickExpensesCount,
+      (i) => TextEditingController(
+        text: i < quickExpenses.length ? quickExpenses[i].emoji : '⚡',
+      ),
+    );
+    final amountControllers = List.generate(
+      quickExpensesCount,
+      (i) => TextEditingController(
+        text: i < quickExpenses.length
+            ? quickExpenses[i].amount.toStringAsFixed(0)
+            : '0',
+      ),
     );
 
-    showModalBottomSheet(
+    await showDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: EdgeInsets.only(
-              left: AppSpacing.xl,
-              right: AppSpacing.xl,
-              top: AppSpacing.lg,
-              bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.xl,
-            ),
+      builder: (context) => Dialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Handle
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: AppColors.border,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: AppSpacing.xl),
-
-                // Title
                 Text(
-                  expense == null ? 'Add quick expense' : 'Edit quick expense',
+                  'Edit Quick Expenses',
                   style: GoogleFonts.poppins(
-                    fontSize: 22,
+                    fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: AppColors.ink,
                   ),
                 ),
-
-                const SizedBox(height: AppSpacing.xl),
-
-                // Name
-                Text(
-                  'Name',
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.muted,
-                  ),
-                ),
-
-                const SizedBox(height: AppSpacing.sm),
-
-                TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    hintText: 'e.g. Chai',
-                    filled: true,
-                    fillColor: AppColors.background,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: AppSpacing.lg),
-
-                // Amount
-                Text(
-                  'Amount',
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.muted,
-                  ),
-                ),
-
-                const SizedBox(height: AppSpacing.sm),
-
-                TextField(
-                  controller: amountController,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  decoration: InputDecoration(
-                    prefixText: '₹ ',
-                    hintText: '20',
-                    filled: true,
-                    fillColor: AppColors.background,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: AppSpacing.xxl),
-
-                // Save
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final name = nameController.text.trim();
-
-                      final amount = double.tryParse(amountController.text);
-
-                      if (name.isEmpty || amount == null || amount <= 0) {
-                        return;
-                      }
-
-                      setState(() {
-                        quickExpenses[index] = {
-                          'name': name,
-                          'amount': amount,                          
-                        };
-                      });
-
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                      ),
-                    ),
-                    child: Text(
-                      'Save',
-                      style: GoogleFonts.poppins(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Remove existing shortcut
-                if (expense != null) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: TextButton(
-                      onPressed: () {
-                        setState(() {
-                          quickExpenses[index] = null;
-                        });
-
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        'Remove shortcut',
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.danger,
+                const SizedBox(height: AppSpacing.md),
+                for (int i = 0; i < quickExpensesCount; i++)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 44,
+                          child: TextField(
+                            controller: emojiControllers[i],
+                            maxLength: 1,
+                            textAlign: TextAlign.center,
+                            decoration: InputDecoration(
+                              hintText: 'Emoji',
+                              isDense: true,
+                              counterText: '',
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 8,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                            style: const TextStyle(fontSize: 16),
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          flex: 2,
+                          child: TextField(
+                            controller: nameControllers[i],
+                            decoration: InputDecoration(
+                              hintText: 'Name',
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 8,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                            style: GoogleFonts.poppins(fontSize: 13),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            controller: amountControllers[i],
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              hintText: '₹ Amount',
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 8,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                            style: GoogleFonts.poppins(fontSize: 13),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                const SizedBox(height: AppSpacing.lg),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final List<QuickExpense> updated = [];
+                        final defaults = getDefaultQuickExpenses();
+                        for (int i = 0; i < quickExpensesCount; i++) {
+                          final name = nameControllers[i].text.trim();
+                          final emoji = emojiControllers[i].text.trim();
+                          final amount = double.tryParse(
+                            amountControllers[i].text.trim(),
+                          );
+                          final fallback = i < quickExpenses.length
+                              ? quickExpenses[i]
+                              : defaults[i];
 
-                const SizedBox(height: AppSpacing.sm),
+                          updated.add(
+                            QuickExpense(
+                              name: name.isNotEmpty ? name : fallback.name,
+                              amount: (amount != null && amount > 0)
+                                  ? amount
+                                  : fallback.amount,
+                              emoji: emoji.isNotEmpty ? emoji : fallback.emoji,
+                              categoryId: fallback.categoryId,
+                            ),
+                          );
+                        }
+                        await saveQuickExpenses(updated);
+                        if (context.mounted) Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('Save'),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-
-  
-  // --------------------------------------------------
-  // BUILD
-  // --------------------------------------------------
+  Color getDailyCapColor(DailyCapTrend trend) {
+    switch (trend) {
+      case DailyCapTrend.increased:
+        return AppColors.success;
+      case DailyCapTrend.decreased:
+        return AppColors.danger;
+      case DailyCapTrend.unchanged:
+        return AppColors.ink;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Temporary values.
-    // These will later come from the budget engine.
-
-    const double dailyCap = 500;
-    const double spentToday = 320;
-    const double safeToSpend = 180;
-    const double dailyCapChange = 35;
-
-    final bool underDailyCap = spentToday <= dailyCap;
-
-    final double progress = (spentToday / dailyCap).clamp(0.0, 1.0);
+    final dashboard = ref.watch(dashboardProvider);
+    final isOnTrack =
+        dashboard.baseDailyCap == 0 ||
+        dashboard.spentToday <= dashboard.baseDailyCap;
 
     return Scaffold(
       backgroundColor: AppColors.background,
-
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.xl),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.xl,
+            AppSpacing.lg,
+            AppSpacing.xl,
+            AppSpacing.xxxl,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --------------------------------------------------
-              // HEADER
-              // --------------------------------------------------
+              // 1. Header (Month text + Profile icon)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Good evening',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: AppColors.muted,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        'Dashboard',
-                        style: GoogleFonts.poppins(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.ink,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    DateFormat('MMMM').format(DateTime.now()),
+                    style: GoogleFonts.poppins(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.ink,
+                    ),
                   ),
-
                   Container(
                     width: 42,
                     height: 42,
@@ -337,22 +362,58 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(AppRadius.md),
                       border: Border.all(color: AppColors.border),
                     ),
-                    child: const Icon(
-                      Icons.person_outline,
+                    child: IconButton(
+                      onPressed: openProfile,
+                      padding: EdgeInsets.zero,
+                      icon: const Icon(Icons.person_outline),
                       color: AppColors.ink,
                     ),
                   ),
                 ],
               ),
+              const SizedBox(height: AppSpacing.xxl),
 
-              const SizedBox(height: AppSpacing.xxxl),
+              // 2. Month Summary (Remaining & Spent side by side)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'THIS MONTH',
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.4,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: HomepageTile(
+                          label: 'Remaining',
+                          amount: dashboard.remainingPool,
+                          color: AppColors.ink,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: HomepageTile(
+                          label: 'Spent',
+                          amount: dashboard.spentThisMonth,
+                          color: AppColors.ink,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.xxl),
 
-              // --------------------------------------------------
-              // SAFE TO SPEND
-              // --------------------------------------------------
+              // 3. Main Spending Card (Safe to Spend + Daily Cap + Spent Today progress)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(AppSpacing.xxl),
+                padding: const EdgeInsets.all(AppSpacing.lg),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -361,224 +422,70 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'SAFE TO SPEND TODAY',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
-                        color: AppColors.muted,
-                      ),
-                    ),
-
-                    const SizedBox(height: AppSpacing.sm),
-
-                    Text(
-                      '₹${safeToSpend.toStringAsFixed(0)}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 40,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.ink,
-                        height: 1.1,
-                      ),
-                    ),
-
-                    const SizedBox(height: AppSpacing.xs),
-
-                    Text(
-                      'you can spend this much more today',
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        color: AppColors.muted,
-                      ),
-                    ),
-
-                    const SizedBox(height: AppSpacing.xxl),
-
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Daily cap',
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: AppColors.muted,
+                        Expanded(
+                          child: HomepageTile(
+                            label: 'Today\'s Limit',
+                            amount: dashboard.safeToSpend,
+                            color: AppColors.ink,
                           ),
                         ),
-                        Text(
-                          '₹${dailyCap.toStringAsFixed(0)}',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: HomepageTile(
+                            label: 'Daily Budget',
+                            amount: dashboard.dailyCap,
+                            color: getDailyCapColor(dashboard.dailyCapTrend),
                           ),
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: AppSpacing.md),
-
+                    const SizedBox(height: AppSpacing.lg),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           'Spent today',
                           style: GoogleFonts.poppins(
-                            fontSize: 14,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
                             color: AppColors.muted,
                           ),
                         ),
                         Text(
-                          '₹${spentToday.toStringAsFixed(0)}',
+                          '₹${dashboard.spentToday.toStringAsFixed(0)}',
                           style: GoogleFonts.poppins(
-                            fontSize: 16,
+                            fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            color: underDailyCap
-                                ? AppColors.ink
-                                : AppColors.danger,
+                            color: isOnTrack ? AppColors.ink : AppColors.danger,
                           ),
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: AppSpacing.lg),
-
+                    const SizedBox(height: AppSpacing.xs),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: LinearProgressIndicator(
-                        value: progress,
+                        value: dashboard.progress.clamp(0.0, 1.0),
                         minHeight: 8,
                         backgroundColor: AppColors.border,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          underDailyCap ? AppColors.success : AppColors.danger,
+                          isOnTrack ? AppColors.success : AppColors.danger,
                         ),
                       ),
-                    ),
-
-                    const SizedBox(height: AppSpacing.sm),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${(progress * 100).round()}% of daily cap',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color: AppColors.muted,
-                          ),
-                        ),
-                        Text(
-                          underDailyCap ? 'On track' : 'Over daily cap',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: underDailyCap
-                                ? AppColors.success
-                                : AppColors.danger,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: AppSpacing.lg),
-
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.trending_up,
-                          size: 17,
-                          color: AppColors.success,
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            '₹${dailyCapChange.toStringAsFixed(0)} more available than yesterday',
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: AppColors.muted,
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(height: AppSpacing.xxl),
 
-              // --------------------------------------------------
-              // QUICK LOG EXPENSES
-              // --------------------------------------------------
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'QUICK LOG EXPENSES',
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.4,
-                      color: AppColors.ink,
-                    ),
-                  ),
-
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _editingQuickExpenses = !_editingQuickExpenses;
-                      });
-                    },
-                    child: Text(
-                      _editingQuickExpenses ? 'Done' : 'Edit',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: AppSpacing.md),
-
-              // Exactly five fixed slots.
-              Row(
-                children: List.generate(5, (index) {
-                  return Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        right: index == 4 ? 0 : AppSpacing.sm,
-                      ),
-                      child: _QuickExpenseButton(
-                        expense: quickExpenses[index],
-                        editing: _editingQuickExpenses,
-                        onTap: () => _handleQuickExpenseTap(index),
-                      ),
-                    ),
-                  );
-                }),
-              ),
-
-              const SizedBox(height: AppSpacing.xxl),
-
-              // --------------------------------------------------
-              // LOG EXPENSE
-              // --------------------------------------------------
+              // 4. Log Expense Action Button
               SizedBox(
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton.icon(
-                  onPressed: () => _openLogExpense(context),
-                  icon: const Icon(Icons.add),
-                  label: Text(
-                    'Log expense',
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  onPressed: openLogExpense,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -587,267 +494,126 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
                   ),
-                ),
-              ),
-
-              const SizedBox(height: AppSpacing.xxxl),
-
-              // --------------------------------------------------
-              // RECENT EXPENSES
-              // --------------------------------------------------
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Recent expenses',
+                  icon: const Icon(Icons.add, size: 21),
+                  label: Text(
+                    'Log Expense',
                     style: GoogleFonts.poppins(
-                      fontSize: 18,
+                      fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'View all',
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xxl),
+
+              // 5. Quick Log Expenses Section
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'QUICK LOG EXPENSES',
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.4,
+                          color: AppColors.ink,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: openEditQuickExpensesDialog,
+                        child: Text(
+                          'Edit',
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  SizedBox(
+                    height: 94,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          for (int i = 0; i < quickExpensesCount; i++) ...[
+                            SizedBox(
+                              width: 72,
+                              child: QuickExpenseButton(
+                                expense: i < quickExpenses.length
+                                    ? quickExpenses[i]
+                                    : null,
+                                onTap: () => handleQuickExpenseTap(i),
+                              ),
+                            ),
+                            if (i != quickExpensesCount - 1)
+                              const SizedBox(width: AppSpacing.sm),
+                          ],
+                        ],
                       ),
                     ),
                   ),
                 ],
               ),
-
-              const SizedBox(height: AppSpacing.sm),
-
-              const _ExpenseTile(
-                title: 'Lunch',
-                category: 'Food',
-                amount: 120,
-                icon: Icons.restaurant_outlined,
-              ),
-
-              const _ExpenseTile(
-                title: 'Auto',
-                category: 'Transport',
-                amount: 80,
-                icon: Icons.directions_car_outlined,
-              ),
-
-              const _ExpenseTile(
-                title: 'Laundry',
-                category: 'Hostel',
-                amount: 60,
-                icon: Icons.local_laundry_service_outlined,
-              ),
-
-              const SizedBox(height: AppSpacing.xxl),
             ],
           ),
         ),
       ),
-
-      // --------------------------------------------------
-      // BOTTOM NAVIGATION
-      // --------------------------------------------------
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: AppColors.surface,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.muted,
-        elevation: 0,
-        selectedLabelStyle: GoogleFonts.poppins(
-          fontSize: 11,
-          fontWeight: FontWeight.w500,
-        ),
-        unselectedLabelStyle: GoogleFonts.poppins(fontSize: 11),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long_outlined),
-            label: 'Expenses',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet_outlined),
-            label: 'Budget',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_outlined),
-            label: 'Analytics',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month_outlined),
-            label: 'Schedule',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ================================================================
-// QUICK EXPENSE BUTTON
-// ================================================================
-
-class _QuickExpenseButton extends StatelessWidget {
-  final Map<String, dynamic>? expense;
-  final bool editing;
-  final VoidCallback onTap;
-
-  const _QuickExpenseButton({
-    required this.expense,
-    required this.editing,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final bool isEmpty = expense == null;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 82,
-        decoration: BoxDecoration(
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: AppColors.border),
+          border: Border(top: BorderSide(color: AppColors.border)),
         ),
-        child: Stack(
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  
-                  const SizedBox(height: AppSpacing.xs),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Text(
-                      isEmpty ? 'Add expense' : expense?['name'] as String,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                        color: isEmpty ? AppColors.muted : AppColors.ink,
-                      ),
-                    ),
-                  ),
-
-                  if (!isEmpty)
-                    Text(
-                      '₹${(expense?['amount'] as double).toStringAsFixed(0)}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: AppColors.muted,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-
-            // Small edit icon while editing.
-            if (editing)
-              Positioned(
-                top: 5,
-                right: 5,
-                child: Icon(
-                  isEmpty ? Icons.add : Icons.edit_outlined,
-                  size: 13,
-                  color: AppColors.primary,
+        child: SafeArea(
+          child: SizedBox(
+            height: 64,
+            child: Row(
+              children: [
+                NavBarItem(
+                  icon: Icons.home_outlined,
+                  label: 'Home',
+                  selected: true,
+                  onTap: () {},
                 ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ================================================================
-// EXPENSE TILE
-// ================================================================
-
-class _ExpenseTile extends StatelessWidget {
-  final String title;
-  final String category;
-  final double amount;
-  final IconData icon;
-
-  const _ExpenseTile({
-    required this.title,
-    required this.category,
-    required this.amount,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-              child: Icon(icon, size: 20, color: AppColors.muted),
+                NavBarItem(
+                  icon: Icons.receipt_long_outlined,
+                  label: 'Expenses',
+                  selected: false,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ExpenseHistory(),
+                      ),
+                    );
+                  },
+                ),
+                NavBarItem(
+                  icon: Icons.account_balance_wallet_outlined,
+                  label: 'Budget',
+                  selected: false,
+                  onTap: () {},
+                ),
+                NavBarItem(
+                  icon: Icons.bar_chart_outlined,
+                  label: 'Analytics',
+                  selected: false,
+                  onTap: () {},
+                ),
+                NavBarItem(
+                  icon: Icons.event_note_outlined,
+                  label: 'Schedule',
+                  selected: false,
+                  onTap: () {},
+                ),
+              ],
             ),
-
-            const SizedBox(width: AppSpacing.md),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.ink,
-                    ),
-                  ),
-                  Text(
-                    category,
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: AppColors.muted,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            Text(
-              '-₹${amount.toStringAsFixed(0)}',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.ink,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

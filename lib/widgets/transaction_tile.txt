@@ -1,0 +1,69 @@
+import 'package:expense_tracker/constants/app_constants.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../models/transaction.dart';
+import '../theme/app_theme.dart';
+
+class TransactionTile extends StatelessWidget {
+  final TransactionModel transaction;
+  const TransactionTile({super.key, required this.transaction});
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = AppConstants.getCategoryIcon(transaction.categoryId);
+    final title = transaction.note?.isNotEmpty == true
+        ? transaction.note!
+        : transaction.categoryId;
+    return SizedBox(
+      height: 70,
+      child: Container(
+        child: Card(
+          color: AppColors.background,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadiusGeometry.circular(AppRadius.sm),
+            side: BorderSide(color: AppColors.border),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Row(
+              children: [
+                Icon(icon, size: 20, color: AppColors.muted),
+                const SizedBox(width: AppSpacing.md),
+                Column(
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    Text(
+                      transaction.categoryId,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.muted,
+                      ),
+                    ),
+                  ],
+                ),
+                Spacer(),
+                Text(
+                  '-₹${transaction.amount.toStringAsFixed(0)}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.ink,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
