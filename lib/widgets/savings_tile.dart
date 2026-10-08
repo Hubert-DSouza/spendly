@@ -36,7 +36,7 @@ class SavingsTile extends ConsumerWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
@@ -48,7 +48,7 @@ class SavingsTile extends ConsumerWidget {
               text: TextSpan(
                 style: GoogleFonts.poppins(
                   fontSize: 15,
-                  color: AppColors.ink,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w400,
                 ),
                 children: [
@@ -82,7 +82,7 @@ class SavingsTile extends ConsumerWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.muted,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 Spacer(),
@@ -118,7 +118,7 @@ class SavingsTile extends ConsumerWidget {
                       },
                     );
                   },
-                  icon: Icon(Icons.delete, size: 18, color: AppColors.danger),
+                  icon: Icon(Icons.delete, size: 18, color: Theme.of(context).colorScheme.error),
                 ),
               ],
             ),

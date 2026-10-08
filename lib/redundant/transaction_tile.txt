@@ -19,16 +19,16 @@ class TransactionTile extends StatelessWidget {
       height: 70,
       child: Container(
         child: Card(
-          color: AppColors.background,
+          color: Theme.of(context).scaffoldBackgroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadiusGeometry.circular(AppRadius.sm),
-            side: BorderSide(color: AppColors.border),
+            side: BorderSide(color: Theme.of(context).colorScheme.outline),
           ),
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
             child: Row(
               children: [
-                Icon(icon, size: 20, color: AppColors.muted),
+                Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 const SizedBox(width: AppSpacing.md),
                 Column(
                   children: [
@@ -37,7 +37,7 @@ class TransactionTile extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.ink,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     Text(
@@ -45,7 +45,7 @@ class TransactionTile extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.muted,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -56,7 +56,7 @@ class TransactionTile extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.ink,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],

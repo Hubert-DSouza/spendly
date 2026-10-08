@@ -7,17 +7,30 @@ import '../constants/app_constants.dart';
 import '../models/transaction.dart';
 import '../theme/app_theme.dart';
 
-class ExpenseTile extends ConsumerWidget {
-  final TransactionModel transaction;
+// class ExpenseTile extends ConsumerStatefulWidget {
+//   final TransactionModel transaction;
 
+//   const ExpenseTile({super.key, required this.transaction});
+
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {}
+// }
+
+class ExpenseTile extends ConsumerStatefulWidget {
+  final TransactionModel transaction;
   const ExpenseTile({super.key, required this.transaction});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ExpenseTile> createState() => _ExpenseTileState();
+}
+
+class _ExpenseTileState extends ConsumerState<ExpenseTile> {
+  @override
+  Widget build(BuildContext context) {
     //final icon = AppConstants.getCategoryIcon(transaction.category);
-    final title = transaction.note?.isNotEmpty == true
-        ? transaction.note!
-        : transaction.category;
+    final title = widget.transaction.note?.isNotEmpty == true
+        ? widget.transaction.note!
+        : widget.transaction.category;
     TransactionModel? tempTransaction;
 
     return Padding(
@@ -25,18 +38,17 @@ class ExpenseTile extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.lg),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
         ),
         child: Row(
           children: [
-            
             Container(
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               // child: IconButton(
@@ -74,10 +86,10 @@ class ExpenseTile extends ConsumerWidget {
               //     }
               //   },
               //   icon: const Icon(Icons.delete),
-              //   color: AppColors.danger,
+              //   color: Theme.of(context).colorScheme.error,
               // ),
               child: IconButton(
-                color: AppColors.danger,
+                color: Theme.of(context).colorScheme.error,
 
                 onPressed: () async {
                   bool confirmDelete = false;
@@ -98,11 +110,11 @@ class ExpenseTile extends ConsumerWidget {
                           TextButton(
                             onPressed: () {
                               tempTransaction = TransactionModel(
-                                amount: transaction.amount,
-                                category: transaction.category,
-                                note: transaction.note,
-                                id: transaction.id,
-                                occurredAt: transaction.occurredAt,
+                                amount: widget.transaction.amount,
+                                category: widget.transaction.category,
+                                note: widget.transaction.note,
+                                id: widget.transaction.id,
+                                occurredAt: widget.transaction.occurredAt,
                               );
                               Navigator.pop(context);
                               confirmDelete = true;
@@ -115,19 +127,23 @@ class ExpenseTile extends ConsumerWidget {
                   );
 
                   if (confirmDelete == true) {
-                    ref
+                    await ref
                         .read(transactionProvider.notifier)
-                        .removeTransaction(transaction.id!);
+                        .removeTransaction(widget.transaction.id!);
+                  
+                  if (!mounted) {
+                    return;
                   }
+                  //ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       duration: Duration(seconds: 3),
                       content: Text("Transaction Deleted"),
                       action: SnackBarAction(
                         label: "UNDO",
-                        textColor: AppColors.surface,
-                        onPressed: () {
-                          ref
+                        textColor: AppColors.background,
+                        onPressed: () async {
+                          await ref
                               .read(transactionProvider.notifier)
                               .addTransaction(
                                 tempTransaction!.amount,
@@ -135,6 +151,8 @@ class ExpenseTile extends ConsumerWidget {
                                 tempTransaction!.note,
                                 tempTransaction!.occurredAt,
                               );
+                               if (!mounted) return;
+                              
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text("Transaction Restored"),
@@ -145,7 +163,7 @@ class ExpenseTile extends ConsumerWidget {
                       ),
                     ),
                   );
-                },
+                }},
                 icon: Icon(Icons.delete),
               ),
             ),
@@ -159,30 +177,31 @@ class ExpenseTile extends ConsumerWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.ink,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   Text(
-                    transaction.category,
+                    widget.transaction.category,
                     style: GoogleFonts.poppins(
                       fontSize: 12,
-                      color: AppColors.muted,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
             ),
             Text(
-              '-₹${transaction.amount.toStringAsFixed(0)}',
+              '-₹${widget.transaction.amount.toStringAsFixed(0)}',
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: AppColors.ink,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ],
         ),
       ),
     );
+  
   }
 }

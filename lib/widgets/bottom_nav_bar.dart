@@ -14,8 +14,8 @@
 //   Widget build(BuildContext context) {
 //     return Container(
 //       decoration: const BoxDecoration(
-//         color: AppColors.surface,
-//         border: Border(top: BorderSide(color: AppColors.border)),
+//         color: Theme.of(context).colorScheme.surface,
+//         border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outline)),
 //       ),
 //       child: SafeArea(
 //         child: SizedBox(
@@ -98,7 +98,7 @@
 
 //   @override
 //   Widget build(BuildContext context) {
-//     final color = selected ? AppColors.primary : AppColors.muted;
+//     final color = selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant;
 
 //     return Expanded(
 //       child: GestureDetector(

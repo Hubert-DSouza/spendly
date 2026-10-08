@@ -36,9 +36,9 @@ class _MainPageState extends State<MainPage> {
 
       bottomNavigationBar: NavigationBar(
         selectedIndex: selectedIndex,
-        surfaceTintColor: AppColors.primary,
-        indicatorColor: AppColors.primary,
-        backgroundColor: AppColors.surface,
+        surfaceTintColor: Theme.of(context).colorScheme.primary,
+        indicatorColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         indicatorShape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(50),
         ),

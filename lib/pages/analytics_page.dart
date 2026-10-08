@@ -90,7 +90,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
     
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(
@@ -105,7 +105,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                       style: GoogleFonts.poppins(
                         fontSize: 24,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     Spacer(),
@@ -118,7 +118,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                       ),
                       inputDecorationTheme: InputDecorationTheme(
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: AppColors.border),
+                          borderSide: BorderSide(color: Theme.of(context).colorScheme.outline),
                         ),
                       ),
 
@@ -146,16 +146,16 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                         padding: const EdgeInsets.all(AppSpacing.md),
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: AppColors.surface,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(AppRadius.md),
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: Theme.of(context).colorScheme.outline),
                         ),
                         child: Text(
                           'No expenses yet',
                           style: GoogleFonts.poppins(
                             fontSize: 20,
                             fontWeight: FontWeight.w400,
-                            color: AppColors.muted,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       )
@@ -163,9 +163,9 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                         padding: const EdgeInsets.all(AppSpacing.md),
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: AppColors.surface,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(AppRadius.md),
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: Theme.of(context).colorScheme.outline),
                         ),
                         child: Column(
                           children: [
@@ -186,7 +186,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                               style: GoogleFonts.poppins(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.muted,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                             ),
 
@@ -218,7 +218,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                                         style: GoogleFonts.poppins(
                                           fontSize: 20,
                                           fontWeight: FontWeight.w400,
-                                          color: AppColors.muted,
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                                         ),
                                       ),
                                       Spacer(),
@@ -227,7 +227,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                                         style: GoogleFonts.poppins(
                                           fontSize: 20,
                                           fontWeight: FontWeight.w400,
-                                          color: AppColors.muted,
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                                         ),
                                       ),
                                     ],
@@ -247,7 +247,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                       children: [
                         Expanded(
                           child: Card(
-                            color: AppColors.background,
+                            color: Theme.of(context).scaffoldBackgroundColor,
                             elevation: 0,
                             child: Column(
                               children: [
@@ -256,13 +256,15 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                                   style: GoogleFonts.poppins(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
-                                    color: AppColors.muted,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                                 Text(
                                   '₹${averageSpentDaily.toStringAsFixed(2)}',
                                   style: GoogleFonts.poppins(
-                                    color: AppColors.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     fontSize: 30,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -272,7 +274,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                                 //   style: GoogleFonts.poppins(
                                 //     fontSize: 10,
                                 //     fontWeight: FontWeight.w400,
-                                //     color: AppColors.muted,
+                                //     color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 //   ),
                                 // ),
                               ],
@@ -282,7 +284,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
 
                         Expanded(
                           child: Card(
-                            color: AppColors.background,
+                            color: Theme.of(context).scaffoldBackgroundColor,
                             elevation: 0,
                             child: Column(
                               children: [
@@ -291,13 +293,15 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                                   style: GoogleFonts.poppins(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
-                                    color: AppColors.muted,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                                 Text(
                                   '₹${totalSpent.toStringAsFixed(0)}',
                                   style: GoogleFonts.poppins(
-                                    color: AppColors.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     fontSize: 30,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -307,7 +311,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                                 //   style: GoogleFonts.poppins(
                                 //     fontSize: 10,
                                 //     fontWeight: FontWeight.w400,
-                                //     color: AppColors.muted,
+                                //     color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 //   ),
                                 // ),
                               ],
@@ -321,7 +325,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                     //   children: [
                     //     Expanded(
                     //       child: Card(
-                    //         color: AppColors.background,
+                    //         color: Theme.of(context).scaffoldBackgroundColor,
                     //         elevation: 0,
                     //         child: Column(
                     //           children: [
@@ -330,13 +334,13 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                     //               style: GoogleFonts.poppins(
                     //                 fontSize: 16,
                     //                 fontWeight: FontWeight.w500,
-                    //                 color: AppColors.muted,
+                    //                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                     //               ),
                     //             ),
                     //             Text(
                     //               '₹${ref.read(dashboardProvider.notifier).todaysLimit().toStringAsFixed(2)}',
                     //               style: GoogleFonts.poppins(
-                    //                 color: AppColors.primary,
+                    //                 color: Theme.of(context).colorScheme.primary,
                     //                 fontSize: 30,
                     //                 fontWeight: FontWeight.w600,
                     //               ),
@@ -346,7 +350,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                     //               style: GoogleFonts.poppins(
                     //                 fontSize: 10,
                     //                 fontWeight: FontWeight.w400,
-                    //                 color: AppColors.muted,
+                    //                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                     //               ),
                     //             ),
                     //           ],
@@ -355,7 +359,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                     //     ),
                     //     Expanded(
                     //       child: Card(
-                    //         color: AppColors.background,
+                    //         color: Theme.of(context).scaffoldBackgroundColor,
                     //         elevation: 0,
                     //         child: Column(
                     //           children: [
@@ -364,13 +368,13 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                     //               style: GoogleFonts.poppins(
                     //                 fontSize: 16,
                     //                 fontWeight: FontWeight.w500,
-                    //                 color: AppColors.muted,
+                    //                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                     //               ),
                     //             ),
                     //             Text(
                     //               '₹${ref.read(dashboardProvider.notifier).todaysLimit().toStringAsFixed(2)}',
                     //               style: GoogleFonts.poppins(
-                    //                 color: AppColors.primary,
+                    //                 color: Theme.of(context).colorScheme.primary,
                     //                 fontSize: 30,
                     //                 fontWeight: FontWeight.w600,
                     //               ),
@@ -380,7 +384,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
                     //               style: GoogleFonts.poppins(
                     //                 fontSize: 10,
                     //                 fontWeight: FontWeight.w400,
-                    //                 color: AppColors.muted,
+                    //                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                     //               ),
                     //             ),
                     //           ],

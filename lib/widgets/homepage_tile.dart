@@ -18,9 +18,9 @@ import 'package:flutter/material.dart';
 //     return Container(
 //       padding: const EdgeInsets.all(AppSpacing.lg),
 //       decoration: BoxDecoration(
-//         color: AppColors.surface,
+//         color: Theme.of(context).colorScheme.surface,
 //         borderRadius: BorderRadius.circular(AppRadius.md),
-//         border: Border.all(color: AppColors.border),
+//         border: Border.all(color: Theme.of(context).colorScheme.outline),
 //       ),
 //       child: Column(
 //         crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,7 +29,7 @@ import 'package:flutter/material.dart';
 //             label,
 //             style: GoogleFonts.poppins(
 //               fontSize: 12,
-//               color: AppColors.primary,
+//               color: Theme.of(context).colorScheme.primary,
 //               fontWeight: FontWeight.w600,
 //             ),
 //           ),

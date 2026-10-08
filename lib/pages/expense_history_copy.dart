@@ -26,9 +26,15 @@ class ExpenseHistory extends ConsumerWidget {
     }
     // getting all the months
     final months = groupedTransactions.keys.toList();
+    months.sort((a, b) {
+      final dateA = DateFormat('MMMM yyyy').parse(a);
+      final dateB = DateFormat('MMMM yyyy').parse(b);
+
+      return dateB.compareTo(dateA);
+    });
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -42,7 +48,9 @@ class ExpenseHistory extends ConsumerWidget {
                           'No expenses logged yet',
                           style: GoogleFonts.poppins(
                             fontSize: 14,
-                            color: AppColors.muted,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       )
@@ -50,7 +58,7 @@ class ExpenseHistory extends ConsumerWidget {
                         itemCount: groupedTransactions.length,
                         itemBuilder: (context, index) {
                           final month = months[index];
-                          final monthTransactions = groupedTransactions[month]!;
+                          final monthTransactions = groupedTransactions[month]!;                         
                           return Column(
                             children: [
                               Text(
@@ -58,7 +66,9 @@ class ExpenseHistory extends ConsumerWidget {
                                 style: GoogleFonts.poppins(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.ink,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                               ),
                               SizedBox(height: AppSpacing.md),

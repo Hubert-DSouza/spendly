@@ -8,6 +8,7 @@ import '../providers/user_settings_provider.dart';
 import '../theme/app_theme.dart';
 import 'package:contribution_heatmap/contribution_heatmap.dart';
 import '../providers/transaction_provider.dart';
+import 'package:expense_tracker/pages/how_to_use_page.dart';
 
 class UserSettingsPage extends ConsumerStatefulWidget {
   const UserSettingsPage({super.key});
@@ -83,7 +84,7 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
     }).toList();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: SafeArea(
@@ -95,7 +96,7 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
                 style: GoogleFonts.poppins(
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.ink,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -104,7 +105,7 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: AppSpacing.xxl),
@@ -113,7 +114,7 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
                 style: GoogleFonts.poppins(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.muted,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -124,13 +125,13 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
                   prefixIcon: Icon(
                     Icons.currency_rupee_rounded,
                     size: 18,
-                    color: AppColors.muted,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   filled: true,
-                  fillColor: AppColors.surface,
+                  fillColor: Theme.of(context).colorScheme.surface,
                   hintStyle: GoogleFonts.poppins(
                     fontSize: 12,
-                    color: AppColors.muted,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 10,
@@ -138,7 +139,7 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide:  BorderSide(color: Theme.of(context).colorScheme.outline),
                   ),
                 ),
                 keyboardType: TextInputType.number,
@@ -150,7 +151,7 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
                 child: ElevatedButton(
                   onPressed: savePool,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -166,23 +167,23 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: AppSpacing.md),
-              Text("Spending Activity", style: GoogleFonts.poppins(color: AppColors.ink, fontSize: 20, fontWeight: FontWeight.w600),),
+              const SizedBox(height: AppSpacing.xl),
+              Text("Spending Activity", style: GoogleFonts.poppins(color: Theme.of(context).colorScheme.onSurface, fontSize: 20, fontWeight: FontWeight.w600),),
               const SizedBox(height: AppSpacing.md),
 
               ContributionHeatmap(
                 monthTextStyle: GoogleFonts.poppins(
-                  color: AppColors.ink,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w600,
                 ),
-                weekdayTextStyle: GoogleFonts.poppins(color: AppColors.muted),
+                weekdayTextStyle: GoogleFonts.poppins(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 10),
                 entries: entries,
                 minDate: minDate,
                 maxDate: maxDate,
                 showMonthLabels: true,
                 weekdayLabel: WeekdayLabel.full,
                 splittedMonthView: true,
-                cellSize: 15,
+                cellSize: 14,
                 cellRadius: AppRadius.md,
                 // onCellTap: (date, value) {
                 //   final spent = spendingMap[date] ?? 0;
@@ -205,13 +206,21 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
                   final intensity = (value / 500).clamp(0.0, 1.0);
 
                   return Color.lerp(
-                    AppColors.background,
-                    AppColors.primary,
+                    Theme.of(context).scaffoldBackgroundColor,
+                    Theme.of(context).colorScheme.primary,
                     intensity,
                   )!;
                 },
               ),
               const SizedBox(height: AppSpacing.md),
+
+              Row(children: [
+                Expanded(child: Column(children: [Icon(Icons.circle, color: const Color.fromARGB(255, 132, 255, 0), size: 20,), Text("₹0 ", style: GoogleFonts.poppins(fontSize: 12),), ],)),
+                Expanded(child: Column(children: [Icon(Icons.circle, color: const Color(0xFFBFDBFE), size: 20,), Text("₹1–100 ", style: GoogleFonts.poppins(fontSize: 12),), ],)),
+                Expanded(child: Column(children: [Icon(Icons.circle, color: const Color(0xFF60A5FA), size: 20,), Text("₹101–250 ", style: GoogleFonts.poppins(fontSize: 12),), ],)),
+                Expanded(child: Column(children: [Icon(Icons.circle, color: const Color.fromARGB(255, 80, 127, 255), size: 20,), Text("₹251–500 ", style: GoogleFonts.poppins(fontSize: 12),), ],)),
+                Expanded(child: Column(children: [Icon(Icons.circle, color: const Color.fromARGB(255, 28, 76, 208), size: 20,), Text("₹500+ ", style: GoogleFonts.poppins(fontSize: 12),), ],)),
+              ],),
 
               // ElevatedButton(
               //   onPressed: () {
@@ -234,15 +243,28 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
 //   },
 //   child: const Text('Generate Demo Data'),
 // ),
+              
               Spacer(),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HowToUsePage(),
+                    ),
+                  );
+                },
+                child: const Text("How to Use Spendly"),
+              ),
+              SizedBox(height: AppSpacing.sm,),
               SizedBox(
                 width: double.infinity,
                 height: 48,
                 child: OutlinedButton(
                   onPressed: () => FirebaseAuth.instance.signOut(),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.danger,
-                    side: const BorderSide(color: AppColors.border),
+                    foregroundColor: Theme.of(context).colorScheme.error,
+                    side:  BorderSide(color: Theme.of(context).colorScheme.outline),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppRadius.md),
                     ),

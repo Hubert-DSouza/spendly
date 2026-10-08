@@ -87,7 +87,7 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
-//       backgroundColor: AppColors.background,
+//       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 //       body: SafeArea(
 //         child: Center(
 //           child: SingleChildScrollView(
@@ -102,7 +102,7 @@
 //                     style: GoogleFonts.poppins(
 //                       fontSize: 24,
 //                       fontWeight: FontWeight.w700,
-//                       color: AppColors.ink,
+//                       color: Theme.of(context).colorScheme.onSurface,
 //                       height: 1.2,
 //                     ),
 //                   ),
@@ -113,7 +113,7 @@
 //                         : 'Start managing your money better',
 //                     style: GoogleFonts.poppins(
 //                       fontSize: 12,
-//                       color: AppColors.muted,
+//                       color: Theme.of(context).colorScheme.onSurfaceVariant,
 //                     ),
 //                   ),
 //                   const SizedBox(height: 28),
@@ -150,7 +150,7 @@
 //                           'Forgot password?',
 //                           style: GoogleFonts.poppins(
 //                             fontSize: 11,
-//                             color: AppColors.primary,
+//                             color: Theme.of(context).colorScheme.primary,
 //                             fontWeight: FontWeight.w500,
 //                           ),
 //                         ),
@@ -166,7 +166,7 @@
 //                     child: ElevatedButton(
 //                       onPressed: loading ? null : submit,
 //                       style: ElevatedButton.styleFrom(
-//                         backgroundColor: AppColors.primary,
+//                         backgroundColor: Theme.of(context).colorScheme.primary,
 //                         foregroundColor: Colors.white,
 //                         elevation: 0,
 //                         shape: RoundedRectangleBorder(
@@ -203,7 +203,7 @@
 //                             : "Already have an account? Log in",
 //                         style: GoogleFonts.poppins(
 //                           fontSize: 11,
-//                           color: AppColors.muted,
+//                           color: Theme.of(context).colorScheme.onSurfaceVariant,
 //                           fontWeight: FontWeight.w500,
 //                         ),
 //                       ),
@@ -248,8 +248,13 @@ class _LoginPageState extends State<LoginPage> {
           password: passwordController.text,
         );
       } on FirebaseAuthException catch (e) {
-        print("CODE: ${e.code}");
-        print("MESSAGE: ${e.message}");
+        //print("CODE: ${e.code}");
+        //print("MESSAGE: ${e.message}");
+
+        if (!mounted) {
+          return;
+        }
+
 
         ScaffoldMessenger.of(
           context,
@@ -264,20 +269,24 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> forgotPassword() async {
     try {
-      print("Sending to: ${emailController.text.trim()}");
+      //print("Sending to: ${emailController.text.trim()}");
 
       await FirebaseAuth.instance.sendPasswordResetEmail(
         email: emailController.text.trim(),
       );
 
-      print("RESET EMAIL SENT");
+      //print("RESET EMAIL SENT");
+      if (!mounted) {
+        return;
+      }
+
 
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Reset email sent!")));
     } on FirebaseAuthException catch (e) {
-      print("ERROR CODE: ${e.code}");
-      print("ERROR MESSAGE: ${e.message}");
+     // print("ERROR CODE: ${e.code}");
+      //print("ERROR MESSAGE: ${e.message}");
 
       ScaffoldMessenger.of(
         context,
@@ -292,6 +301,10 @@ class _LoginPageState extends State<LoginPage> {
         password: passwordController.text,
       );
     } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Invalid Email or Password")));
@@ -323,7 +336,7 @@ class _LoginPageState extends State<LoginPage> {
                   //   style: GoogleFonts.poppins(
                   //     fontSize: 24,
                   //     fontWeight: FontWeight.bold,
-                  //     color: AppColors.primary,
+                  //     color: Theme.of(context).colorScheme.primary,
                   //   ),
                   // ),
                   SizedBox(height: AppSpacing.lg),
@@ -359,10 +372,10 @@ class _LoginPageState extends State<LoginPage> {
                         Size(double.infinity, 50),
                       ),
                       backgroundColor: WidgetStatePropertyAll(
-                        AppColors.primary,
+                       Theme.of(context).colorScheme.primary,
                       ),
                       foregroundColor: WidgetStatePropertyAll(
-                        AppColors.surface,
+                        Theme.of(context).colorScheme.surface,
                       ),
                       shape: WidgetStatePropertyAll(
                         RoundedRectangleBorder(
@@ -502,8 +515,8 @@ class _LoginPageState extends State<LoginPage> {
                     minimumSize: WidgetStatePropertyAll(
                       Size(double.infinity, 50),
                     ),
-                    backgroundColor: WidgetStatePropertyAll(AppColors.primary),
-                    foregroundColor: WidgetStatePropertyAll(AppColors.surface),
+                    backgroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.primary),
+                    foregroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.surface),
                     shape: WidgetStatePropertyAll(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),

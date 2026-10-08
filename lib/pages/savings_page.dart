@@ -45,26 +45,28 @@ class _SavingsPageState extends ConsumerState<SavingsPage> {
         minimum: EdgeInsets.all(30),
         child: Column(
           children: [
+            SizedBox(height: AppSpacing.lg,),
             Row(
               children: [
+                //SizedBox(height: AppSpacing.xxl,),
                 Text(
                   "Savings Goals",
                   style: GoogleFonts.poppins(
-                    fontSize: 26,
+                    fontSize: 24,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.ink,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 Spacer(),
                 ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(AppColors.primary),
-                    foregroundColor: WidgetStatePropertyAll(AppColors.surface),
+                    backgroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.primary),
+                    foregroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.surface),
                     textStyle: WidgetStatePropertyAll(
                       GoogleFonts.poppins(
-                        fontSize: 14,
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.surface,
+                        color: Theme.of(context).colorScheme.surface,
                       ),
                     ),
                     shape: WidgetStatePropertyAll(
@@ -77,136 +79,141 @@ class _SavingsPageState extends ConsumerState<SavingsPage> {
                     showDialog(
                       context: context,
                       builder: (context) {
-                        return Container(
-                          padding: const EdgeInsets.all(24.0),
-                          height: 400,
-                          child: Material(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Padding(
-                              padding: const EdgeInsets.all(30.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
+                        return StatefulBuilder(                         
+                          builder: (context, setDialogState) {
+                            return Container(
+                              padding: const EdgeInsets.all(24.0),
+                              height: 400,
+                              child: Material(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Text(
-                                        "Add Savings Goal",
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          color: AppColors.ink,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "Add Savings Goal",
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                              color: Theme.of(context).colorScheme.onSurface,
+                                            ),
+                                          ),
+                                          Spacer(),
+                                          IconButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            icon: Icon(Icons.close),
+                                          ),
+                                        ],
                                       ),
-                                      Spacer(),
-                                      IconButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        icon: Icon(Icons.close),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: AppSpacing.lg),
-                                  TextField(
-                                    controller: titleController,
-                                    decoration: InputDecoration(
-                                      label: Text(
-                                        "Title",
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          color: AppColors.muted,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: AppColors.muted,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: AppSpacing.md),
-                                  TextField(
-                                    controller: amountController,
-                                    decoration: InputDecoration(
-                                      label: Text(
-                                        "Target Amount",
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          color: AppColors.muted,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: AppColors.muted,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: AppSpacing.md),
-                                  Row(
-                                    children: [
-                                      ElevatedButton(
-                                        onPressed: () async {
-                                          final pickedDate =
-                                              await showDatePicker(
-                                                context: context,
-                                                initialDate: DateTime.now(),
-                                                firstDate: DateTime.now(),
-                                                lastDate: DateTime(2030),
-                                              );
-                                          if (pickedDate != null) {
-                                            setState(() {
-                                              selectedDate = pickedDate;
-                                            });
-                                          }
-                                        },
-                                        child: Text("Choose Date"),
-                                      ),
-                                      Spacer(),
-                                      Text(
-                                        DateFormat("dd MMM yyyy").format(
-                                          selectedDate ?? DateTime.now(),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      ref
-                                          .read(savingsProvider.notifier)
-                                          .addSavings(
-                                            titleController.text,
-                                            0,
-                                            double.parse(amountController.text),
-                                            selectedDate!,
-                                          );
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text("Add"),
-                                    style: ButtonStyle(
-                                      backgroundColor: WidgetStatePropertyAll(
-                                        AppColors.primary,
-                                      ),
-                                      foregroundColor: WidgetStatePropertyAll(
-                                        AppColors.surface,
-                                      ),
-                                      shape: WidgetStatePropertyAll(
-                                        RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
+                                      SizedBox(height: AppSpacing.lg),
+                                      TextField(
+                                        controller: titleController,
+                                        decoration: InputDecoration(
+                                          label: Text(
+                                            "Title",
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            borderSide: BorderSide(
+                                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
+                                      SizedBox(height: AppSpacing.md),
+                                      TextField(
+                                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                        controller: amountController,
+                                        decoration: InputDecoration(
+                                          label: Text(
+                                            "Target Amount",                                        
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                            borderSide: BorderSide(
+                                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: AppSpacing.md),
+                                      Row(
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: () async {
+                                              final pickedDate =
+                                                  await showDatePicker(
+                                                    context: context,
+                                                    initialDate: DateTime.now(),
+                                                    firstDate: DateTime.now(),
+                                                    lastDate: DateTime(2030),
+                                                  );
+                                              if (pickedDate != null) {
+                                                setDialogState(() {
+                                                  selectedDate = pickedDate;
+                                                });
+                                              }
+                                            },
+                                            child: Text("Choose Date"),
+                                          ),
+                                          Spacer(),
+                                          Text(
+                                            DateFormat("dd MMM yyyy").format(
+                                              selectedDate ?? DateTime.now(),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          ref
+                                              .read(savingsProvider.notifier)
+                                              .addSavings(
+                                                titleController.text,
+                                                0,
+                                                double.tryParse(amountController.text) ?? 0,
+                                                selectedDate!,
+                                              );
+                                          Navigator.of(context).pop();
+                                        },                                   
+                                        style: ButtonStyle(
+                                          backgroundColor: WidgetStatePropertyAll(
+                                            Theme.of(context).colorScheme.primary,
+                                          ),
+                                          foregroundColor: WidgetStatePropertyAll(
+                                            Theme.of(context).colorScheme.surface,
+                                          ),
+                                          shape: WidgetStatePropertyAll(
+                                            RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(
+                                                12,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                         child: Text("Add"),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
+                            );
+                          }
                         );
                       },
                     );

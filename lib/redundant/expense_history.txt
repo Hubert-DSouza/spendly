@@ -28,7 +28,7 @@ class ExpenseHistory extends ConsumerWidget {
     final months = groupedTransactions.keys.toList();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -42,7 +42,7 @@ class ExpenseHistory extends ConsumerWidget {
                           'No expenses logged yet',
                           style: GoogleFonts.poppins(
                             fontSize: 14,
-                            color: AppColors.muted,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       )
@@ -64,7 +64,7 @@ class ExpenseHistory extends ConsumerWidget {
                                   style: GoogleFonts.poppins(
                                     fontSize: 22,
                                     fontWeight: FontWeight.w700,
-                                    color: AppColors.ink,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                               ),
@@ -79,7 +79,7 @@ class ExpenseHistory extends ConsumerWidget {
                                     padding: const EdgeInsets.only(right: 20),
                                     alignment: Alignment.centerRight,
                                     decoration: BoxDecoration(
-                                      color: AppColors.danger,
+                                      color: Theme.of(context).colorScheme.error,
                                       borderRadius: BorderRadius.circular(
                                         AppRadius.md,
                                       ),

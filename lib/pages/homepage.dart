@@ -105,11 +105,11 @@ import '../theme/app_theme.dart';
 //   Color getDailyCapColor(DailyCapTrend trend) {
 //     switch (trend) {
 //       case DailyCapTrend.increased:
-//         return AppColors.success;
+//         return Theme.of(context).colorScheme.tertiary;
 //       case DailyCapTrend.decreased:
-//         return AppColors.danger;
+//         return Theme.of(context).colorScheme.error;
 //       case DailyCapTrend.unchanged:
-//         return AppColors.ink;
+//         return Theme.of(context).colorScheme.onSurface;
 //     }
 //   }
 
@@ -121,7 +121,7 @@ import '../theme/app_theme.dart';
 //         dashboard.spentToday <= dashboard.baseDailyCap;
 
 //     return Scaffold(
-//       backgroundColor: AppColors.background,
+//       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 //       body: SafeArea(
 //         child: SingleChildScrollView(
 //           padding: const EdgeInsets.fromLTRB(
@@ -142,22 +142,22 @@ import '../theme/app_theme.dart';
 //                     style: GoogleFonts.poppins(
 //                       fontSize: 28,
 //                       fontWeight: FontWeight.w700,
-//                       color: AppColors.ink,
+//                       color: Theme.of(context).colorScheme.onSurface,
 //                     ),
 //                   ),
 //                   Container(
 //                     width: 42,
 //                     height: 42,
 //                     decoration: BoxDecoration(
-//                       color: AppColors.surface,
+//                       color: Theme.of(context).colorScheme.surface,
 //                       borderRadius: BorderRadius.circular(AppRadius.md),
-//                       border: Border.all(color: AppColors.border),
+//                       border: Border.all(color: Theme.of(context).colorScheme.outline),
 //                     ),
 //                     child: IconButton(
 //                       onPressed: openProfile,
 //                       padding: EdgeInsets.zero,
 //                       icon: const Icon(Icons.person_outline),
-//                       color: AppColors.ink,
+//                       color: Theme.of(context).colorScheme.onSurface,
 //                     ),
 //                   ),
 //                 ],
@@ -174,7 +174,7 @@ import '../theme/app_theme.dart';
 //                   //     fontSize: 12,
 //                   //     fontWeight: FontWeight.w600,
 //                   //     letterSpacing: 0.4,
-//                   //     color: AppColors.ink,
+//                   //     color: Theme.of(context).colorScheme.onSurface,
 //                   //   ),
 //                   // ),
 //                   // const SizedBox(height: AppSpacing.sm),
@@ -184,7 +184,7 @@ import '../theme/app_theme.dart';
 //                         child: HomepageTile(
 //                           label: 'Remaining',
 //                           amount: dashboard.remainingPool,
-//                           color: AppColors.ink,
+//                           color: Theme.of(context).colorScheme.onSurface,
 //                         ),
 //                       ),
 //                       const SizedBox(width: AppSpacing.md),
@@ -192,7 +192,7 @@ import '../theme/app_theme.dart';
 //                         child: HomepageTile(
 //                           label: 'Spent',
 //                           amount: dashboard.spentThisMonth,
-//                           color: AppColors.ink,
+//                           color: Theme.of(context).colorScheme.onSurface,
 //                         ),
 //                       ),
 //                     ],
@@ -206,9 +206,9 @@ import '../theme/app_theme.dart';
 //                 width: double.infinity,
 //                 padding: const EdgeInsets.all(AppSpacing.lg),
 //                 decoration: BoxDecoration(
-//                   color: AppColors.surface,
+//                   color: Theme.of(context).colorScheme.surface,
 //                   borderRadius: BorderRadius.circular(AppRadius.lg),
-//                   border: Border.all(color: AppColors.border),
+//                   border: Border.all(color: Theme.of(context).colorScheme.outline),
 //                 ),
 //                 child: Column(
 //                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,7 +219,7 @@ import '../theme/app_theme.dart';
 //                           child: HomepageTile(
 //                             label: 'Today\'s Limit',
 //                             amount: dashboard.safeToSpend,
-//                             color: AppColors.ink,
+//                             color: Theme.of(context).colorScheme.onSurface,
 //                           ),
 //                         ),
 //                         const SizedBox(width: AppSpacing.md),
@@ -241,7 +241,7 @@ import '../theme/app_theme.dart';
 //                           style: GoogleFonts.poppins(
 //                             fontSize: 13,
 //                             fontWeight: FontWeight.w500,
-//                             color: AppColors.muted,
+//                             color: Theme.of(context).colorScheme.onSurfaceVariant,
 //                           ),
 //                         ),
 //                         Text(
@@ -249,7 +249,7 @@ import '../theme/app_theme.dart';
 //                           style: GoogleFonts.poppins(
 //                             fontSize: 15,
 //                             fontWeight: FontWeight.w600,
-//                             color: isOnTrack ? AppColors.ink : AppColors.danger,
+//                             color: isOnTrack ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.error,
 //                           ),
 //                         ),
 //                       ],
@@ -260,9 +260,9 @@ import '../theme/app_theme.dart';
 //                       child: LinearProgressIndicator(
 //                         value: dashboard.progress.clamp(0.0, 1.0),
 //                         minHeight: 8,
-//                         backgroundColor: AppColors.border,
+//                         backgroundColor: Theme.of(context).colorScheme.outline,
 //                         valueColor: AlwaysStoppedAnimation<Color>(
-//                           isOnTrack ? AppColors.success : AppColors.danger,
+//                           isOnTrack ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.error,
 //                         ),
 //                       ),
 //                     ),
@@ -276,9 +276,9 @@ import '../theme/app_theme.dart';
 //                 width: double.infinity,
 //                 padding: const EdgeInsets.all(AppSpacing.lg),
 //                 decoration: BoxDecoration(
-//                   color: AppColors.surface,
+//                   color: Theme.of(context).colorScheme.surface,
 //                   borderRadius: BorderRadius.circular(AppRadius.lg),
-//                   border: Border.all(color: AppColors.border),
+//                   border: Border.all(color: Theme.of(context).colorScheme.outline),
 //                 ),
 //                 child: Column(
 //                   children: [
@@ -288,7 +288,7 @@ import '../theme/app_theme.dart';
 //                         fontSize: 12,
 //                         fontWeight: FontWeight.w600,
 //                         letterSpacing: 0.4,
-//                         color: AppColors.ink,
+//                         color: Theme.of(context).colorScheme.onSurface,
 //                       ),
 //                     ),
 //                     const SizedBox(height: AppSpacing.md),
@@ -299,7 +299,7 @@ import '../theme/app_theme.dart';
 //                     //   style: GoogleFonts.poppins(
 //                     //     fontSize: 12,
 //                     //     fontWeight: FontWeight.w500,
-//                     //     color: AppColors.muted,
+//                     //     color: Theme.of(context).colorScheme.onSurfaceVariant,
 //                     //   ),
 //                     // ),
 //                     // const SizedBox(height: AppSpacing.sm),
@@ -308,7 +308,7 @@ import '../theme/app_theme.dart';
 //                     //     'No recent expenses',
 //                     //     style: GoogleFonts.poppins(
 //                     //       fontSize: 12,
-//                     //       color: AppColors.muted,
+//                     //       color: Theme.of(context).colorScheme.onSurfaceVariant,
 //                     //     ),
 //                     //   )
 //                     // else
@@ -320,9 +320,9 @@ import '../theme/app_theme.dart';
 //                     //           OutlinedButton(
 //                     //             onPressed: () => applyTransactionTemplate(tx),
 //                     //             style: OutlinedButton.styleFrom(
-//                     //               backgroundColor: AppColors.surface,
+//                     //               backgroundColor: Theme.of(context).colorScheme.surface,
 //                     //               side: const BorderSide(
-//                     //                 color: AppColors.border,
+//                     //                 color: Theme.of(context).colorScheme.outline,
 //                     //               ),
 //                     //               shape: RoundedRectangleBorder(
 //                     //                 borderRadius: BorderRadius.circular(
@@ -339,7 +339,7 @@ import '../theme/app_theme.dart';
 //                     //               style: GoogleFonts.poppins(
 //                     //                 fontSize: 12,
 //                     //                 fontWeight: FontWeight.w500,
-//                     //                 color: AppColors.ink,
+//                     //                 color: Theme.of(context).colorScheme.onSurface,
 //                     //               ),
 //                     //             ),
 //                     //           ),
@@ -365,7 +365,7 @@ import '../theme/app_theme.dart';
 //                                 style: GoogleFonts.poppins(
 //                                   fontSize: 13,
 //                                   fontWeight: FontWeight.w500,
-//                                   color: AppColors.muted,
+//                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
 //                                 ),
 //                               ),
 //                               const SizedBox(height: AppSpacing.sm),
@@ -378,22 +378,22 @@ import '../theme/app_theme.dart';
 //                                 style: GoogleFonts.poppins(
 //                                   fontSize: 18,
 //                                   fontWeight: FontWeight.w600,
-//                                   color: AppColors.ink,
+//                                   color: Theme.of(context).colorScheme.onSurface,
 //                                 ),
 //                                 decoration: InputDecoration(
 //                                   prefixText: '₹ ',
 //                                   prefixStyle: GoogleFonts.poppins(
 //                                     fontSize: 18,
 //                                     fontWeight: FontWeight.w600,
-//                                     color: AppColors.ink,
+//                                     color: Theme.of(context).colorScheme.onSurface,
 //                                   ),
 //                                   hintText: '0.00',
 //                                   hintStyle: GoogleFonts.poppins(
 //                                     fontSize: 18,
-//                                     color: AppColors.border,
+//                                     color: Theme.of(context).colorScheme.outline,
 //                                   ),
 //                                   filled: true,
-//                                   fillColor: AppColors.surface,
+//                                   fillColor: Theme.of(context).colorScheme.surface,
 //                                   contentPadding: const EdgeInsets.symmetric(
 //                                     horizontal: AppSpacing.md,
 //                                     vertical: 13.5,
@@ -403,7 +403,7 @@ import '../theme/app_theme.dart';
 //                                       AppRadius.md,
 //                                     ),
 //                                     borderSide: const BorderSide(
-//                                       color: AppColors.border,
+//                                       color: Theme.of(context).colorScheme.outline,
 //                                     ),
 //                                   ),
 //                                   enabledBorder: OutlineInputBorder(
@@ -411,7 +411,7 @@ import '../theme/app_theme.dart';
 //                                       AppRadius.md,
 //                                     ),
 //                                     borderSide: const BorderSide(
-//                                       color: AppColors.border,
+//                                       color: Theme.of(context).colorScheme.outline,
 //                                     ),
 //                                   ),
 //                                   focusedBorder: OutlineInputBorder(
@@ -419,7 +419,7 @@ import '../theme/app_theme.dart';
 //                                       AppRadius.md,
 //                                     ),
 //                                     borderSide: const BorderSide(
-//                                       color: AppColors.primary,
+//                                       color: Theme.of(context).colorScheme.primary,
 //                                       width: 1.5,
 //                                     ),
 //                                   ),
@@ -440,7 +440,7 @@ import '../theme/app_theme.dart';
 //                                 style: GoogleFonts.poppins(
 //                                   fontSize: 13,
 //                                   fontWeight: FontWeight.w500,
-//                                   color: AppColors.muted,
+//                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
 //                                 ),
 //                               ),
 //                               const SizedBox(height: AppSpacing.sm),
@@ -455,7 +455,7 @@ import '../theme/app_theme.dart';
 //                                       style: GoogleFonts.poppins(
 //                                         fontSize: 14,
 //                                         fontWeight: FontWeight.w500,
-//                                         color: AppColors.ink,
+//                                         color: Theme.of(context).colorScheme.onSurface,
 //                                       ),
 //                                     ),
 //                                   );
@@ -468,11 +468,11 @@ import '../theme/app_theme.dart';
 //                                 style: GoogleFonts.poppins(
 //                                   fontSize: 14,
 //                                   fontWeight: FontWeight.w500,
-//                                   color: AppColors.ink,
+//                                   color: Theme.of(context).colorScheme.onSurface,
 //                                 ),
 //                                 decoration: InputDecoration(
 //                                   filled: true,
-//                                   fillColor: AppColors.surface,
+//                                   fillColor: Theme.of(context).colorScheme.surface,
 //                                   contentPadding: const EdgeInsets.symmetric(
 //                                     horizontal: AppSpacing.md,
 //                                     vertical: 13.5,
@@ -482,7 +482,7 @@ import '../theme/app_theme.dart';
 //                                       AppRadius.md,
 //                                     ),
 //                                     borderSide: const BorderSide(
-//                                       color: AppColors.border,
+//                                       color: Theme.of(context).colorScheme.outline,
 //                                     ),
 //                                   ),
 //                                   enabledBorder: OutlineInputBorder(
@@ -490,7 +490,7 @@ import '../theme/app_theme.dart';
 //                                       AppRadius.md,
 //                                     ),
 //                                     borderSide: const BorderSide(
-//                                       color: AppColors.border,
+//                                       color: Theme.of(context).colorScheme.outline,
 //                                     ),
 //                                   ),
 //                                   focusedBorder: OutlineInputBorder(
@@ -498,16 +498,16 @@ import '../theme/app_theme.dart';
 //                                       AppRadius.md,
 //                                     ),
 //                                     borderSide: const BorderSide(
-//                                       color: AppColors.primary,
+//                                       color: Theme.of(context).colorScheme.primary,
 //                                       width: 1.5,
 //                                     ),
 //                                   ),
 //                                 ),
 //                                 icon: const Icon(
 //                                   Icons.keyboard_arrow_down,
-//                                   color: AppColors.muted,
+//                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
 //                                 ),
-//                                 dropdownColor: AppColors.surface,
+//                                 dropdownColor: Theme.of(context).colorScheme.surface,
 //                                 borderRadius: BorderRadius.circular(
 //                                   AppRadius.md,
 //                                 ),
@@ -525,7 +525,7 @@ import '../theme/app_theme.dart';
 //                       style: GoogleFonts.poppins(
 //                         fontSize: 13,
 //                         fontWeight: FontWeight.w500,
-//                         color: AppColors.muted,
+//                         color: Theme.of(context).colorScheme.onSurfaceVariant,
 //                       ),
 //                     ),
 //                     const SizedBox(height: AppSpacing.sm),
@@ -543,7 +543,7 @@ import '../theme/app_theme.dart';
 //                       child: ElevatedButton.icon(
 //                         onPressed: addExpense,
 //                         style: ElevatedButton.styleFrom(
-//                           backgroundColor: AppColors.primary,
+//                           backgroundColor: Theme.of(context).colorScheme.primary,
 //                           foregroundColor: Colors.white,
 //                           elevation: 0,
 //                           shape: RoundedRectangleBorder(
@@ -606,7 +606,7 @@ class _HomepageState extends ConsumerState<Homepage> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         minimum: EdgeInsets.all(AppSpacing.lg),
         child: SingleChildScrollView(
@@ -614,14 +614,15 @@ class _HomepageState extends ConsumerState<Homepage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               //main month display
+              SizedBox(height: AppSpacing.lg),
               Row(
                 children: [
                   Text(
-                    DateFormat('MMMM').format(DateTime.now()),
+                    DateFormat('MMMM yyyy').format(DateTime.now()),
                     style: GoogleFonts.poppins(
-                      fontSize: 28,
+                      fontSize: 25,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.ink,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   Spacer(),
@@ -637,14 +638,19 @@ class _HomepageState extends ConsumerState<Homepage> {
                   //   },
                   //   icon: Icon(Icons.person_2_outlined),
                   //   style: ButtonStyle(
-                  //     backgroundColor: WidgetStatePropertyAll(AppColors.border),
+                  //     backgroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.outline),
                   //   ),
                   // ),
                 ],
               ),
-              SizedBox(height: AppSpacing.lg),
+              SizedBox(height: AppSpacing.sm),
               Container(
-                color: AppColors.surface,
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+                
                 child: Column(
                   children: [
                     Text(
@@ -652,7 +658,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     SizedBox(height: AppSpacing.lg),
@@ -669,13 +675,15 @@ class _HomepageState extends ConsumerState<Homepage> {
                                   style: GoogleFonts.poppins(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
-                                    color: AppColors.muted,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                                 Text(
                                   '₹${ref.read(dashboardProvider.notifier).todaysLimit().toStringAsFixed(2)}',
                                   style: GoogleFonts.poppins(
-                                    color: AppColors.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     fontSize: 30,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -685,7 +693,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                                   style: GoogleFonts.poppins(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w400,
-                                    color: AppColors.muted,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -703,7 +711,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                                   style: GoogleFonts.poppins(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
-                                    color: AppColors.muted,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                                 Text(
@@ -721,7 +729,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                                   style: GoogleFonts.poppins(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w400,
-                                    color: AppColors.muted,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -738,7 +746,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                           style: GoogleFonts.poppins(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.ink,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         Spacer(),
@@ -747,13 +755,15 @@ class _HomepageState extends ConsumerState<Homepage> {
                           style: GoogleFonts.poppins(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.muted,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
                     ),
                     SizedBox(height: AppSpacing.md),
                     LinearProgressIndicator(
+                      color: Theme.of(context).colorScheme.primary,
+                      backgroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
                       value:
                           ref.read(dashboardProvider.notifier).spentToday() /
                           ref.read(dashboardProvider.notifier).dailyBudget(),
@@ -765,11 +775,11 @@ class _HomepageState extends ConsumerState<Homepage> {
                   ],
                 ),
               ),
-              //SizedBox(height: AppSpacing.lg),
+              SizedBox(height: AppSpacing.md),
               Container(
                 padding: EdgeInsets.all(AppSpacing.lg),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(AppSpacing.lg),
                 ),
                 child: Column(
@@ -781,7 +791,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                           style: GoogleFonts.poppins(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         Spacer(),
@@ -790,12 +800,12 @@ class _HomepageState extends ConsumerState<Homepage> {
                           style: GoogleFonts.poppins(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.muted,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: AppSpacing.md),
+                    SizedBox(height: AppSpacing.xxs),
                     Row(
                       children: [
                         Expanded(
@@ -804,7 +814,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                             child: Row(
                               children: [
                                 Icon(Icons.currency_rupee_outlined, size: 30),
-                                SizedBox(width: 25),
+                                SizedBox(width: 20),
                                 Column(
                                   children: [
                                     Text(
@@ -812,7 +822,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                                       style: GoogleFonts.poppins(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
-                                        color: AppColors.muted,
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                                       ),
                                     ),
                                     Text(
@@ -820,7 +830,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                                       style: GoogleFonts.poppins(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.ink,
+                                        color: Theme.of(context).colorScheme.onSurface,
                                       ),
                                     ),
                                   ],
@@ -835,7 +845,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                             child: Row(
                               children: [
                                 Icon(Icons.wallet_outlined, size: 30),
-                                SizedBox(width: 25),
+                                SizedBox(width: 20),
                                 Column(
                                   children: [
                                     Text(
@@ -843,7 +853,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                                       style: GoogleFonts.poppins(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
-                                        color: AppColors.muted,
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                                       ),
                                     ),
                                     Text(
@@ -851,7 +861,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                                       style: GoogleFonts.poppins(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.ink,
+                                        color: Theme.of(context).colorScheme.onSurface,
                                       ),
                                     ),
                                   ],
@@ -869,7 +879,7 @@ class _HomepageState extends ConsumerState<Homepage> {
               Container(
                 padding: EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(AppSpacing.md),
                 ),
                 child: Column(
@@ -877,9 +887,9 @@ class _HomepageState extends ConsumerState<Homepage> {
                     Text(
                       "Log an Expense",
                       style: GoogleFonts.poppins(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
 
@@ -895,9 +905,9 @@ class _HomepageState extends ConsumerState<Homepage> {
                                   Text(
                                     "Amount",
                                     style: GoogleFonts.poppins(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w500,
-                                      color: AppColors.muted,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                   SizedBox(
@@ -911,19 +921,23 @@ class _HomepageState extends ConsumerState<Homepage> {
                                         0,
                                       ),
                                       child: TextField(
+                                        keyboardType:
+                                            TextInputType.numberWithOptions(
+                                              decimal: true,
+                                            ),
                                         controller: amountController,
                                         decoration: InputDecoration(
                                           hintText: "0.00",
                                           prefixIcon: Icon(
                                             Icons.currency_rupee_rounded,
                                             size: 18,
-                                            color: AppColors.muted,
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                                           ),
                                           filled: true,
-                                          fillColor: AppColors.surface,
+                                          fillColor: Theme.of(context).colorScheme.surface,
                                           hintStyle: GoogleFonts.poppins(
                                             fontSize: 12,
-                                            color: AppColors.muted,
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                                           ),
                                           contentPadding:
                                               const EdgeInsets.symmetric(
@@ -934,8 +948,8 @@ class _HomepageState extends ConsumerState<Homepage> {
                                             borderRadius: BorderRadius.circular(
                                               10,
                                             ),
-                                            borderSide: const BorderSide(
-                                              color: AppColors.border,
+                                            borderSide:  BorderSide(
+                                              color: Theme.of(context).colorScheme.outline,
                                             ),
                                           ),
                                         ),
@@ -951,9 +965,9 @@ class _HomepageState extends ConsumerState<Homepage> {
                                   Text(
                                     "Category",
                                     style: GoogleFonts.poppins(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w500,
-                                      color: AppColors.muted,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                   DropdownMenu<String>(
@@ -974,7 +988,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                                     },
                                     inputDecorationTheme: InputDecorationTheme(
                                       filled: true,
-                                      fillColor: AppColors.surface,
+                                      fillColor: Theme.of(context).colorScheme.surface,
                                       contentPadding:
                                           const EdgeInsets.symmetric(
                                             horizontal: AppSpacing.md,
@@ -984,24 +998,24 @@ class _HomepageState extends ConsumerState<Homepage> {
                                         borderRadius: BorderRadius.circular(
                                           AppRadius.md,
                                         ),
-                                        borderSide: const BorderSide(
-                                          color: AppColors.border,
+                                        borderSide:  BorderSide(
+                                          color: Theme.of(context).colorScheme.outline,
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(
                                           AppRadius.md,
                                         ),
-                                        borderSide: const BorderSide(
-                                          color: AppColors.border,
+                                        borderSide:  BorderSide(
+                                          color: Theme.of(context).colorScheme.outline,
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(
                                           AppRadius.md,
                                         ),
-                                        borderSide: const BorderSide(
-                                          color: AppColors.primary,
+                                        borderSide:  BorderSide(
+                                          color: Theme.of(context).colorScheme.primary,
                                           width: 1.5,
                                         ),
                                       ),
@@ -1016,12 +1030,12 @@ class _HomepageState extends ConsumerState<Homepage> {
                         Text(
                           "Note (optional)",
                           style: GoogleFonts.poppins(
-                            fontSize: 15,
-                            color: AppColors.muted,
+                            fontSize: 14,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        SizedBox(height: AppSpacing.md),
+                        SizedBox(height: AppSpacing.sm),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppRadius.md,
@@ -1036,13 +1050,13 @@ class _HomepageState extends ConsumerState<Homepage> {
                                 prefixIcon: Icon(
                                   Icons.edit_note_outlined,
                                   size: 18,
-                                  color: AppColors.muted,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                                 filled: true,
-                                fillColor: AppColors.surface,
+                                fillColor: Theme.of(context).colorScheme.surface,
                                 hintStyle: GoogleFonts.poppins(
                                   fontSize: 12,
-                                  color: AppColors.muted,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                                 contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 16,
@@ -1050,8 +1064,8 @@ class _HomepageState extends ConsumerState<Homepage> {
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                    color: AppColors.border,
+                                  borderSide:  BorderSide(
+                                    color: Theme.of(context).colorScheme.outline,
                                   ),
                                 ),
                               ),
@@ -1065,10 +1079,11 @@ class _HomepageState extends ConsumerState<Homepage> {
                           ),
                           child: ElevatedButton.icon(
                             onPressed: () {
+                              FocusScope.of(context).unfocus();
                               ref
                                   .read(transactionProvider.notifier)
                                   .addTransaction(
-                                    double.parse(amountController.text),
+                                    double.tryParse(amountController.text) ?? 0,
                                     selectedCategory!,
                                     noteController.text,
                                     DateTime.now(),
@@ -1082,7 +1097,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                             },
                             style: ButtonStyle(
                               backgroundColor: WidgetStateProperty.all(
-                                AppColors.primary,
+                                Theme.of(context).colorScheme.primary,
                               ),
                               shape: WidgetStateProperty.all(
                                 RoundedRectangleBorder(
@@ -1098,12 +1113,12 @@ class _HomepageState extends ConsumerState<Homepage> {
                             label: Text(
                               "Log Expense",
                               style: GoogleFonts.poppins(
-                                color: AppColors.background,
+                                color: Theme.of(context).scaffoldBackgroundColor,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
-                            icon: Icon(Icons.add, color: AppColors.background),
+                            icon: Icon(Icons.add, color: Theme.of(context).scaffoldBackgroundColor),
                           ),
                         ),
                         SizedBox(height: AppSpacing.md),
