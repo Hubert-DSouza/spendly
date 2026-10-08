@@ -1,0 +1,119 @@
+GENERATE DEMO DATA FUNCTION
+
+Future<void> seedDemoData() async {
+  final now = DateTime.now();
+
+  final random = Random();
+
+  final categories = [
+    'Food',
+    'Transport',
+    'Laundry',
+    'Shopping',
+    'Entertainment',
+    'Education',
+    'Health',
+  ];
+
+  for (int i = 0; i < 84; i++) {
+    final date = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).subtract(Duration(days: i));
+
+    // Some days have no spending.
+    if (random.nextDouble() < 0.2) {
+      continue;
+    }
+
+    // 1–3 transactions on a spending day.
+    final transactionCount = random.nextInt(3) + 1;
+
+    for (int j = 0; j < transactionCount; j++) {
+      final category = categories[random.nextInt(categories.length)];
+
+      double amount;
+
+      switch (category) {
+        case 'Food':
+          amount = (50 + random.nextInt(251)).toDouble();
+          break;
+
+        case 'Transport':
+          amount = (30 + random.nextInt(171)).toDouble();
+          break;
+
+        case 'Laundry':
+          amount = (50 + random.nextInt(101)).toDouble();
+          break;
+
+        case 'Shopping':
+          amount = (150 + random.nextInt(851)).toDouble();
+          break;
+
+        case 'Entertainment':
+          amount = (100 + random.nextInt(601)).toDouble();
+          break;
+
+        case 'Education':
+          amount = (50 + random.nextInt(451)).toDouble();
+          break;
+
+        case 'Health':
+          amount = (100 + random.nextInt(701)).toDouble();
+          break;
+
+        default:
+          amount = 100;
+      }
+
+      final doc = transactionsRef.doc();
+
+      final transaction = TransactionModel(
+        amount: amount,
+        category: category,
+        note: 'Demo data',
+        id: doc.id,
+        occurredAt: date,
+      );
+
+      await doc.set(transaction.toMap());
+    }
+  }
+
+  await loadTransactions();
+}
+
+GENERATE DATA BUTTON
+ElevatedButton(
+  onPressed: () {
+    ref.read(transactionProvider.notifier).seedDemoData();
+  },
+  child: const Text('Generate Demo Data'),
+),
+
+
+
+REMOVE DATA FUNCTION
+Future<void> removeDemoData() async {
+  final snapshot = await transactionsRef.get();
+
+  for (final doc in snapshot.docs) {
+    final data = doc.data();
+
+    if (data['note'] == 'Demo data') {
+      await doc.reference.delete();
+    }
+  }
+
+  await loadTransactions();
+}
+
+REMOVE DATA BUTTON
+ElevatedButton(
+  onPressed: () {
+    ref.read(transactionProvider.notifier).removeDemoData();
+  },
+  child: const Text('Remove Demo Data'),
+),

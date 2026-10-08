@@ -11,21 +11,24 @@ class AppConstants {
     'Education',
     'Subscriptions',
     'Health',
-    'Personal',
     'Bills',
-    'Travel',
-    'Gifts',
     'Other',
   ];
 
-  static const List<String> quickCategories = [
-    'Food',
-    'Transport',
-    'Hostel',
-    'Laundry',
-    'Shopping',
-    'Entertainment',
-  ];
+
+  static const Map<String, Color> categoryColors = {
+    'Food': Colors.orange,
+    'Transport': Colors.blue,
+    'Hostel': Colors.green,
+    'Laundry': Colors.purple,
+    'Shopping': Colors.pink,
+    'Entertainment': Colors.red,
+    'Education': Colors.yellow,
+    'Subscriptions': Colors.indigo,
+    'Health': Colors.teal,
+    'Bills': Colors.cyan,
+    'Other': Colors.grey,
+  };
 
   static IconData getCategoryIcon(String categoryId) {
     switch (categoryId) {
@@ -51,10 +54,6 @@ class AppConstants {
         return Icons.person_outline;
       case 'Bills':
         return Icons.receipt_long_outlined;
-      case 'Travel':
-        return Icons.flight_outlined;
-      case 'Gifts':
-        return Icons.card_giftcard_outlined;
       default:
         return Icons.more_horiz;
     }

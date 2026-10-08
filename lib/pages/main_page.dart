@@ -1,0 +1,91 @@
+import 'package:expense_tracker/pages/savings_page.dart';
+import 'package:expense_tracker/pages/user_settings_page.dart';
+import 'package:expense_tracker/theme/app_theme.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'homepage.dart';
+import 'expense_history_copy.dart';
+//import 'budget_page.dart';
+import 'analytics_page.dart';
+//import 'schedule_page.dart';
+
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  int selectedIndex = 4;
+
+  final List<Widget> pages = const [
+    UserSettingsPage(),
+    ExpenseHistory(),
+    Homepage(),
+    SavingsPage(),
+    AnalyticsPage(),
+    //SchedulePage(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: pages[selectedIndex],
+
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: selectedIndex,
+        surfaceTintColor: AppColors.primary,
+        indicatorColor: AppColors.primary,
+        backgroundColor: AppColors.surface,
+        indicatorShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50),
+        ),
+        labelTextStyle: WidgetStatePropertyAll(
+          GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500),
+        ),
+
+        onDestinationSelected: (index) {
+          setState(() {
+            selectedIndex = index;
+          });
+        },
+
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.person_outlined),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.receipt_long_outlined),
+            selectedIcon: Icon(Icons.receipt_long),
+            label: 'Expenses',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.account_balance_wallet_outlined),
+            selectedIcon: Icon(Icons.account_balance_wallet),
+            label: 'Savings',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.analytics_outlined),
+            selectedIcon: Icon(Icons.analytics),
+            label: 'Analytics',
+          ),
+
+          // NavigationDestination(
+          //   icon: Icon(Icons.calendar_month_outlined),
+          //   selectedIcon: Icon(Icons.calendar_month),
+          //   label: 'Schedule',
+          // ),
+        ],
+      ),
+    );
+  }
+}
