@@ -32,7 +32,7 @@ class SavingsTile extends ConsumerWidget {
                 ),
                 Spacer(),
                 Text(
-                  "₹${savingsGoal.targetAmount.toString()}",
+                  "₹${savingsGoal.targetAmount.toStringAsFixed(0)}",
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

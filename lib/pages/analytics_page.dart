@@ -1,28 +1,64 @@
+import 'package:expense_tracker/models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 import '../providers/transaction_provider.dart';
-import '../providers/dashboard_provider.dart';
+//import '../providers/dashboard_provider.dart';
 import '../theme/app_theme.dart';
 import 'package:expense_tracker/constants/app_constants.dart';
 
-class AnalyticsPage extends ConsumerWidget {
+class AnalyticsPage extends ConsumerStatefulWidget {
   const AnalyticsPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final expenses = ref.watch(transactionProvider);
-    final spendingByCategory = <String, double>{};
-    final today = DateTime.now();
+  ConsumerState<AnalyticsPage> createState() => _AnalyticsPageState();
+}
 
+class _AnalyticsPageState extends ConsumerState<AnalyticsPage> {
+  //final now = DateTime.now();
+  DateTime selectedMonth = DateTime(DateTime.now().year, DateTime.now().month);
+  final daysPassed = DateTime.now().day;
+
+  @override
+  Widget build(BuildContext context) {
+    final expenses = ref.watch(transactionProvider);
+    Map<String, double> spendingByCategory = <String, double>{};
+
+    int getNumberOfDays() {
+      if (selectedMonth ==
+          DateTime(DateTime.now().year, DateTime.now().month)) {
+        return daysPassed;
+      } else {
+        return DateTime(selectedMonth.year, selectedMonth.month + 1, 0)
+            .difference(DateTime(selectedMonth.year, selectedMonth.month, 1))
+            .inDays;
+      }
+    }
+
+    //get all the monthly categorical expenses
     for (final expense in expenses) {
-      if (expense.occurredAt.year == today.year &&
-          expense.occurredAt.month == today.month) {
+      if (expense.occurredAt.year == selectedMonth.year &&
+          expense.occurredAt.month == selectedMonth.month) {
         spendingByCategory[expense.category] =
             (spendingByCategory[expense.category] ?? 0) + expense.amount;
       }
     }
+
+    //get all the monthly transactions
+    Map<DateTime, List<TransactionModel>> monthlyTransactions = {};
+    for (final expense in expenses) {
+      final month = DateTime(expense.occurredAt.year, expense.occurredAt.month);
+      if (!monthlyTransactions.containsKey(month)) {
+        monthlyTransactions[month] = [];
+      }
+      monthlyTransactions[month]!.add(expense);
+    }
+
+    final months = monthlyTransactions.keys.toList();
+    //sorting by latest first
+    months.sort((a, b) => b.compareTo(a));
 
     final sections = <PieChartSectionData>[];
 
@@ -36,6 +72,22 @@ class AnalyticsPage extends ConsumerWidget {
         ),
       ); // add a PieChartSectionData here
     }
+    final sortedCategories = spendingByCategory.entries.toList();
+
+    sortedCategories.sort((a, b) => b.value.compareTo(a.value));
+
+    final transactions = monthlyTransactions[selectedMonth] ?? [];
+
+    double totalSpent = 0;
+
+    for (final transaction in transactions) {
+      totalSpent += transaction.amount;
+    }
+
+    final averageSpentDaily = totalSpent / getNumberOfDays();
+
+    
+    
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -46,13 +98,45 @@ class AnalyticsPage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Analytics',
-                  style: GoogleFonts.poppins(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.ink,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      'Analytics',
+                      style: GoogleFonts.poppins(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    Spacer(),
+                    DropdownMenu<DateTime>(
+                      width: 110,
+                      initialSelection: selectedMonth,
+                      label: Text(DateFormat('MMM').format(selectedMonth)),
+                      textStyle: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      inputDecorationTheme: InputDecorationTheme(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: AppColors.border),
+                        ),
+                      ),
+
+                      onSelected: (value) {
+                        if (value == null) return;
+
+                        setState(() {
+                          selectedMonth = value;
+                        });
+                      },
+                      dropdownMenuEntries: months.map((month) {
+                        return DropdownMenuEntry<DateTime>(
+                          value: month,
+                          label: DateFormat('MMM').format(month),
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ),
 
                 SizedBox(height: AppSpacing.lg),
@@ -116,10 +200,10 @@ class AnalyticsPage extends ConsumerWidget {
                                     ? 5
                                     : spendingByCategory.length,
                                 itemBuilder: (context, index) {
-                                  final category = spendingByCategory.keys
-                                      .elementAt(index);
-                                  final amount = spendingByCategory.values
-                                      .elementAt(index);
+                                  final entry = sortedCategories[index];
+
+                                  final category = entry.key;
+                                  final amount = entry.value;
 
                                   return Row(
                                     children: [
@@ -168,7 +252,7 @@ class AnalyticsPage extends ConsumerWidget {
                             child: Column(
                               children: [
                                 Text(
-                                  "Today's Limit",
+                                  "Avg. Daily Spend",
                                   style: GoogleFonts.poppins(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -176,21 +260,21 @@ class AnalyticsPage extends ConsumerWidget {
                                   ),
                                 ),
                                 Text(
-                                  '₹${ref.read(dashboardProvider.notifier).todaysLimit().toStringAsFixed(2)}',
+                                  '₹${averageSpentDaily.toStringAsFixed(2)}',
                                   style: GoogleFonts.poppins(
                                     color: AppColors.primary,
                                     fontSize: 30,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                Text(
-                                  "Safe to spend today.",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColors.muted,
-                                  ),
-                                ),
+                                // Text(
+                                //   "Average spending for ${DateFormat('MMM').format(selectedMonth)}",
+                                //   style: GoogleFonts.poppins(
+                                //     fontSize: 10,
+                                //     fontWeight: FontWeight.w400,
+                                //     color: AppColors.muted,
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),
@@ -203,7 +287,7 @@ class AnalyticsPage extends ConsumerWidget {
                             child: Column(
                               children: [
                                 Text(
-                                  "Today's Limit",
+                                  "Monthly Total",
                                   style: GoogleFonts.poppins(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -211,21 +295,21 @@ class AnalyticsPage extends ConsumerWidget {
                                   ),
                                 ),
                                 Text(
-                                  '₹${ref.read(dashboardProvider.notifier).todaysLimit().toStringAsFixed(2)}',
+                                  '₹${totalSpent.toStringAsFixed(0)}',
                                   style: GoogleFonts.poppins(
                                     color: AppColors.primary,
                                     fontSize: 30,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                Text(
-                                  "Safe to spend today.",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColors.muted,
-                                  ),
-                                ),
+                                // Text(
+                                //   "Safe to spend today.",
+                                //   style: GoogleFonts.poppins(
+                                //     fontSize: 10,
+                                //     fontWeight: FontWeight.w400,
+                                //     color: AppColors.muted,
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),
@@ -233,78 +317,78 @@ class AnalyticsPage extends ConsumerWidget {
                       ],
                     ),
                     SizedBox(height: AppSpacing.lg),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Card(
-                            color: AppColors.background,
-                            elevation: 0,
-                            child: Column(
-                              children: [
-                                Text(
-                                  "Today's Limit",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.muted,
-                                  ),
-                                ),
-                                Text(
-                                  '₹${ref.read(dashboardProvider.notifier).todaysLimit().toStringAsFixed(2)}',
-                                  style: GoogleFonts.poppins(
-                                    color: AppColors.primary,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Text(
-                                  "Safe to spend today.",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColors.muted,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Card(
-                            color: AppColors.background,
-                            elevation: 0,
-                            child: Column(
-                              children: [
-                                Text(
-                                  "Today's Limit",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.muted,
-                                  ),
-                                ),
-                                Text(
-                                  '₹${ref.read(dashboardProvider.notifier).todaysLimit().toStringAsFixed(2)}',
-                                  style: GoogleFonts.poppins(
-                                    color: AppColors.primary,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Text(
-                                  "Safe to spend today.",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColors.muted,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     Expanded(
+                    //       child: Card(
+                    //         color: AppColors.background,
+                    //         elevation: 0,
+                    //         child: Column(
+                    //           children: [
+                    //             Text(
+                    //               "Today's Limit",
+                    //               style: GoogleFonts.poppins(
+                    //                 fontSize: 16,
+                    //                 fontWeight: FontWeight.w500,
+                    //                 color: AppColors.muted,
+                    //               ),
+                    //             ),
+                    //             Text(
+                    //               '₹${ref.read(dashboardProvider.notifier).todaysLimit().toStringAsFixed(2)}',
+                    //               style: GoogleFonts.poppins(
+                    //                 color: AppColors.primary,
+                    //                 fontSize: 30,
+                    //                 fontWeight: FontWeight.w600,
+                    //               ),
+                    //             ),
+                    //             Text(
+                    //               "Safe to spend today.",
+                    //               style: GoogleFonts.poppins(
+                    //                 fontSize: 10,
+                    //                 fontWeight: FontWeight.w400,
+                    //                 color: AppColors.muted,
+                    //               ),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     Expanded(
+                    //       child: Card(
+                    //         color: AppColors.background,
+                    //         elevation: 0,
+                    //         child: Column(
+                    //           children: [
+                    //             Text(
+                    //               "Today's Limit",
+                    //               style: GoogleFonts.poppins(
+                    //                 fontSize: 16,
+                    //                 fontWeight: FontWeight.w500,
+                    //                 color: AppColors.muted,
+                    //               ),
+                    //             ),
+                    //             Text(
+                    //               '₹${ref.read(dashboardProvider.notifier).todaysLimit().toStringAsFixed(2)}',
+                    //               style: GoogleFonts.poppins(
+                    //                 color: AppColors.primary,
+                    //                 fontSize: 30,
+                    //                 fontWeight: FontWeight.w600,
+                    //               ),
+                    //             ),
+                    //             Text(
+                    //               "Safe to spend today.",
+                    //               style: GoogleFonts.poppins(
+                    //                 fontSize: 10,
+                    //                 fontWeight: FontWeight.w400,
+                    //                 color: AppColors.muted,
+                    //               ),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ],

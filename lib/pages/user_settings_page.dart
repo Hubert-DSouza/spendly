@@ -109,7 +109,7 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
               ),
               const SizedBox(height: AppSpacing.xxl),
               Text(
-                'Monthly pool budget',
+                'Monthly budget',
                 style: GoogleFonts.poppins(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
@@ -158,7 +158,7 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
                     ),
                   ),
                   child: Text(
-                    'Save pool',
+                    'Update Budget',
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -166,6 +166,8 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
                   ),
                 ),
               ),
+              const SizedBox(height: AppSpacing.md),
+              Text("Spending Activity", style: GoogleFonts.poppins(color: AppColors.ink, fontSize: 20, fontWeight: FontWeight.w600),),
               const SizedBox(height: AppSpacing.md),
 
               ContributionHeatmap(
@@ -223,6 +225,15 @@ class _UserSettingsPageState extends ConsumerState<UserSettingsPage> {
               //   },
               //   child: const Text('Remove Demo Data'),
               // ),
+
+              
+              
+// ElevatedButton(
+//   onPressed: () {
+//     ref.read(transactionProvider.notifier).seedDemoData();
+//   },
+//   child: const Text('Generate Demo Data'),
+// ),
               Spacer(),
               SizedBox(
                 width: double.infinity,

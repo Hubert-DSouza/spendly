@@ -1,5 +1,5 @@
 import 'package:expense_tracker/constants/app_constants.dart';
-import 'package:expense_tracker/pages/user_settings_page.dart';
+//import 'package:expense_tracker/pages/user_settings_page.dart';
 import 'package:expense_tracker/providers/savings_provider.dart';
 import 'package:expense_tracker/providers/user_settings_provider.dart';
 import 'package:flutter/material.dart';
@@ -699,7 +699,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                             child: Column(
                               children: [
                                 Text(
-                                  "Projected Limit",
+                                  "Projected Daily",
                                   style: GoogleFonts.poppins(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -786,7 +786,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                         ),
                         Spacer(),
                         Text(
-                          '${DateFormat('d').format(DateTime.now())} / ${DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day.toString()} days',
+                          '${DateFormat('d').format(DateTime.now())} of ${DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day.toString()} days',
                           style: GoogleFonts.poppins(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
@@ -816,7 +816,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                                       ),
                                     ),
                                     Text(
-                                      '₹${ref.read(dashboardProvider.notifier).spentThisMonth().toStringAsFixed(2)}',
+                                      '₹${ref.read(dashboardProvider.notifier).spentThisMonth().toStringAsFixed(0)}',
                                       style: GoogleFonts.poppins(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600,
@@ -847,7 +847,7 @@ class _HomepageState extends ConsumerState<Homepage> {
                                       ),
                                     ),
                                     Text(
-                                      '₹${(ref.read(dashboardProvider.notifier).monthlyPool() - ref.read(dashboardProvider.notifier).spentThisMonth()).toStringAsFixed(2)}',
+                                      '₹${(ref.read(dashboardProvider.notifier).monthlyPool() - ref.read(dashboardProvider.notifier).spentThisMonth()).toStringAsFixed(0)}',
                                       style: GoogleFonts.poppins(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600,

@@ -18,7 +18,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  int selectedIndex = 4;
+  int selectedIndex = 2;
 
   final List<Widget> pages = const [
     UserSettingsPage(),

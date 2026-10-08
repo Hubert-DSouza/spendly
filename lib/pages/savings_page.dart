@@ -1,6 +1,6 @@
-import 'package:expense_tracker/constants/app_constants.dart';
-import 'package:expense_tracker/pages/user_settings_page.dart';
-import 'package:expense_tracker/providers/user_settings_provider.dart';
+//import 'package:expense_tracker/constants/app_constants.dart';
+//import 'package:expense_tracker/pages/user_settings_page.dart';
+//import 'package:expense_tracker/providers/user_settings_provider.dart';
 import 'package:expense_tracker/providers/savings_provider.dart';
 import 'package:expense_tracker/widgets/savings_tile.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../providers/transaction_provider.dart';
-import '../providers/dashboard_provider.dart';
+//import '../providers/transaction_provider.dart';
+//import '../providers/dashboard_provider.dart';
 import '../theme/app_theme.dart';
 
 class SavingsPage extends ConsumerStatefulWidget {
@@ -217,7 +217,7 @@ class _SavingsPageState extends ConsumerState<SavingsPage> {
             ),
             SizedBox(height: AppSpacing.md),
             Text(
-              "Savings Target for Today: ₹${totalSavings.toStringAsFixed(2)}",
+              "Set Aside Today: ₹${totalSavings.toStringAsFixed(2)}",
               style: GoogleFonts.poppins(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
