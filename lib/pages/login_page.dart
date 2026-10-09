@@ -241,11 +241,11 @@ class _LoginPageState extends State<LoginPage> {
   bool isLogin = true;
 
   Future<void> signUp() async {
-    if (passwordController.text == confirmPasswordController.text) {
+    if (passwordController.text == confirmPasswordController.text.trim()) {
       try {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailController.text,
-          password: passwordController.text,
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
         );
       } on FirebaseAuthException catch (e) {
         //print("CODE: ${e.code}");
@@ -297,8 +297,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> login() async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
       );
     } catch (e) {
       if (!mounted) {
@@ -324,7 +324,142 @@ class _LoginPageState extends State<LoginPage> {
     if (isLogin == true) {
       return Scaffold(
         //Login Modal
-        body: SafeArea(
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Image.asset('lib/assets/images/splash_image.png', scale: 5),
+                    // Text(
+                    //   "Login",
+                    //   style: GoogleFonts.poppins(
+                    //     fontSize: 24,
+                    //     fontWeight: FontWeight.bold,
+                    //     color: Theme.of(context).colorScheme.primary,
+                    //   ),
+                    // ),
+                    SizedBox(height: AppSpacing.lg),
+                    TextField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        hint: Text(
+                          "Email",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: AppSpacing.xl),
+                    TextField(
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        hint: Text(
+                          "Password",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: AppSpacing.xl),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        minimumSize: WidgetStatePropertyAll(
+                          Size(double.infinity, 50),
+                        ),
+                        backgroundColor: WidgetStatePropertyAll(
+                         Theme.of(context).colorScheme.primary,
+                        ),
+                        foregroundColor: WidgetStatePropertyAll(
+                          Theme.of(context).colorScheme.surface,
+                        ),
+                        shape: WidgetStatePropertyAll(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        textStyle: WidgetStatePropertyAll(
+                          GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      onPressed: () {
+                        login();
+                      },
+                      child: Text("Login"),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Dont have an account yet? ",
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              isLogin = !isLogin;
+                            });
+                          },
+                          child: Text(
+                            "Sign Up",
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+          
+                    Spacer(),
+          
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Forgot Password?",
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            forgotPassword();
+                          },
+                          child: Text(
+                            "Reset Password",
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    return Scaffold(
+      //Sign up modal
+      body: SingleChildScrollView(
+        child: SafeArea(
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -332,11 +467,10 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Image.asset('lib/assets/images/splash_image.png', scale: 5),
                   // Text(
-                  //   "Login",
+                  //   "Sign Up",
                   //   style: GoogleFonts.poppins(
                   //     fontSize: 24,
                   //     fontWeight: FontWeight.bold,
-                  //     color: Theme.of(context).colorScheme.primary,
                   //   ),
                   // ),
                   SizedBox(height: AppSpacing.lg),
@@ -352,12 +486,25 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: AppSpacing.xl),
+                  SizedBox(height: AppSpacing.md),
                   TextField(
                     controller: passwordController,
                     decoration: InputDecoration(
                       hint: Text(
                         "Password",
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: AppSpacing.md),
+                  TextField(
+                    controller: confirmPasswordController,
+                    decoration: InputDecoration(
+                      hint: Text(
+                        "Confirm Password",
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w300,
@@ -371,12 +518,8 @@ class _LoginPageState extends State<LoginPage> {
                       minimumSize: WidgetStatePropertyAll(
                         Size(double.infinity, 50),
                       ),
-                      backgroundColor: WidgetStatePropertyAll(
-                       Theme.of(context).colorScheme.primary,
-                      ),
-                      foregroundColor: WidgetStatePropertyAll(
-                        Theme.of(context).colorScheme.surface,
-                      ),
+                      backgroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.primary),
+                      foregroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.surface),
                       shape: WidgetStatePropertyAll(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
@@ -390,15 +533,15 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     onPressed: () {
-                      login();
+                      signUp();
                     },
-                    child: Text("Login"),
+                    child: Text("Sign Up"),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Dont have an account yet? ",
+                        "Have an account? ",
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -411,34 +554,7 @@ class _LoginPageState extends State<LoginPage> {
                           });
                         },
                         child: Text(
-                          "Sign Up",
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  Spacer(),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Forgot Password?",
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          forgotPassword();
-                        },
-                        child: Text(
-                          "Reset Password",
+                          "Login",
                           style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
@@ -449,118 +565,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
-            ),
-          ),
-        ),
-      );
-    }
-    return Scaffold(
-      //Sign up modal
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Image.asset('lib/assets/images/splash_image.png', scale: 5),
-                // Text(
-                //   "Sign Up",
-                //   style: GoogleFonts.poppins(
-                //     fontSize: 24,
-                //     fontWeight: FontWeight.bold,
-                //   ),
-                // ),
-                SizedBox(height: AppSpacing.lg),
-                TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    hint: Text(
-                      "Email",
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: AppSpacing.md),
-                TextField(
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    hint: Text(
-                      "Password",
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: AppSpacing.md),
-                TextField(
-                  controller: confirmPasswordController,
-                  decoration: InputDecoration(
-                    hint: Text(
-                      "Confirm Password",
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: AppSpacing.xl),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    minimumSize: WidgetStatePropertyAll(
-                      Size(double.infinity, 50),
-                    ),
-                    backgroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.primary),
-                    foregroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.surface),
-                    shape: WidgetStatePropertyAll(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    textStyle: WidgetStatePropertyAll(
-                      GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  onPressed: () {
-                    signUp();
-                  },
-                  child: Text("Sign Up"),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Have an account? ",
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          isLogin = !isLogin;
-                        });
-                      },
-                      child: Text(
-                        "Login",
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ),
           ),
         ),

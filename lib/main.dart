@@ -51,20 +51,7 @@ class Spendly extends StatelessWidget {
       title: 'Spendly',
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: ThemeMode.light,
-      // ThemeData(
-      //   colorScheme: ColorScheme(
-      //     primary: Theme.of(context).colorScheme.primary,
-      //     onPrimary: Theme.of(context).colorScheme.onSurface,
-      //     secondary: Theme.of(context).colorScheme.onSurfaceVariant,
-      //     onSecondary: Theme.of(context).colorScheme.onSurface,
-      //     error: Theme.of(context).colorScheme.error,
-      //     onError: Theme.of(context).colorScheme.onSurface,
-      //     surface: Theme.of(context).colorScheme.surface,
-      //     onSurface: Theme.of(context).colorScheme.onSurface,
-      //     brightness: Brightness.light,
-      //   ),        
-      // ),
+      themeMode: ThemeMode.light,   
       
 
       debugShowCheckedModeBanner: false,

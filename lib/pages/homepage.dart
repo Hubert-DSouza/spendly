@@ -23,6 +23,7 @@ import '../theme/app_theme.dart';
 //   final noteController = TextEditingController();
 //   String selectedCategory = 'Food';
 
+
 //   @override
 //   void initState() {
 //     super.initState();
@@ -69,6 +70,7 @@ import '../theme/app_theme.dart';
 //             source: TransactionSource.manual,
 //           );
 //       if (!mounted) return;
+
 
 //       amountController.clear();
 //       noteController.clear();
@@ -292,6 +294,7 @@ import '../theme/app_theme.dart';
 //                       ),
 //                     ),
 //                     const SizedBox(height: AppSpacing.md),
+
 
 //                     // Recent Templates
 //                     // Text(

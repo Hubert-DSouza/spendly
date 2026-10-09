@@ -3,12 +3,9 @@ import 'package:expense_tracker/pages/user_settings_page.dart';
 import 'package:expense_tracker/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'homepage.dart';
 import 'expense_history_copy.dart';
-//import 'budget_page.dart';
 import 'analytics_page.dart';
-//import 'schedule_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -25,8 +22,7 @@ class _MainPageState extends State<MainPage> {
     ExpenseHistory(),
     Homepage(),
     SavingsPage(),
-    AnalyticsPage(),
-    //SchedulePage(),
+    AnalyticsPage(),   
   ];
 
   @override
@@ -40,7 +36,7 @@ class _MainPageState extends State<MainPage> {
         indicatorColor: Theme.of(context).colorScheme.primary,
         backgroundColor: Theme.of(context).colorScheme.surface,
         indicatorShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(50),
+          borderRadius: BorderRadius.circular(50),
         ),
         labelTextStyle: WidgetStatePropertyAll(
           GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500),
@@ -74,8 +70,8 @@ class _MainPageState extends State<MainPage> {
             label: 'Savings',
           ),
           NavigationDestination(
-            icon: Icon(Icons.analytics_outlined),
-            selectedIcon: Icon(Icons.analytics),
+            icon: Icon(Icons.bar_chart_outlined),
+            selectedIcon: Icon(Icons.bar_chart),
             label: 'Analytics',
           ),
 
